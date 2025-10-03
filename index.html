@@ -3,23 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Happy Birthday 🎉</title>
+  <title>Happy Ballistic Birthday 🎉</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>🎂 Happy Birthday! 🎂</h1>
-  <div id="typing"></div>
-
-  <div id="quiz">
-    <p>🕵️ Sebelum lanjut, jawab teka-teki ini:</p>
-    <p>"Aku bulat, ada lilin di atas, aku manis. Apakah aku?"</p>
-    <input type="text" id="answer" placeholder="Tulis jawabannya...">
-    <button onclick="checkAnswer()">Jawab</button>
-  </div>
-
-  <div id="secretMessage">🎉 Selamat Ulang Tahun! Semoga panjang umur, sehat selalu, dan bahagia! 🎁</div>
-
   <canvas id="confetti"></canvas>
+  <div class="ballistic-wrapper">
+    <header>
+      <h1>🎯 Happy Ballistic Birthday!</h1>
+      <p id="typing"></p>
+    </header>
+
+    <section id="quiz" class="quiz-card">
+      <p>🕵️ Sebelum lanjut, jawab teka-teki ini:</p>
+      <p><strong>"Aku bulat, ada lilin di atas, aku manis. Apakah aku?"</strong></p>
+      <div class="quiz-inputs">
+        <input type="text" id="answer" placeholder="Tulis jawabannya...">
+        <button id="quizButton" onclick="checkAnswer()">Jawab</button>
+      </div>
+    </section>
+
+    <section id="celebration" class="celebration" aria-live="polite">
+      <div id="secretMessage">🎉 Selamat Ulang Tahun! Semoga panjang umur, sehat selalu, dan bahagia! 🎁</div>
+
+      <div class="photo-slider" aria-label="Galeri foto kenangan">
+        <button class="slider-nav prev" aria-label="Foto sebelumnya">‹</button>
+        <div class="slides-window">
+          <div class="slides">
+            <figure class="slide">
+              <img src="https://images.unsplash.com/photo-1528716321680-815a8cdb8cbe?auto=format&fit=crop&w=900&q=80" alt="Balon warna-warni dengan nuansa pesta">
+              <figcaption>Kenangan seru di pesta tahun lalu.</figcaption>
+            </figure>
+            <figure class="slide">
+              <img src="https://images.unsplash.com/photo-1529653762956-b0a27278529c?auto=format&fit=crop&w=900&q=80" alt="Kue ulang tahun dengan dekorasi mewah">
+              <figcaption>Kue spesial penuh makna.</figcaption>
+            </figure>
+            <figure class="slide">
+              <img src="https://images.unsplash.com/photo-1486427944299-d1955d23e34d?auto=format&fit=crop&w=900&q=80" alt="Sahabat tertawa bersama di pesta">
+              <figcaption>Momen tawa bersama sahabat.</figcaption>
+            </figure>
+          </div>
+        </div>
+        <button class="slider-nav next" aria-label="Foto berikutnya">›</button>
+      </div>
+    </section>
+  </div>
 
   <script src="script.js"></script>
 </body>
