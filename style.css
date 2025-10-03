@@ -1,70 +1,273 @@
+:root {
+  --bg-gradient: radial-gradient(circle at top, #141b2d 0%, #05070e 65%, #020204 100%);
+  --accent: #ffcc00;
+  --accent-strong: #ff5f6d;
+  --text-light: #f2f4ff;
+  --panel: rgba(12, 18, 34, 0.85);
+  --panel-border: rgba(255, 255, 255, 0.2);
+  --shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: "Comic Sans MS", cursive, sans-serif;
-  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-  height: 100vh;
+  font-family: "Orbitron", "Montserrat", system-ui, sans-serif;
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  background: var(--bg-gradient);
+  color: var(--text-light);
   overflow: hidden;
+  position: relative;
+  cursor: crosshair;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=60');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: screen;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+#confetti {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+}
+
+.ballistic-wrapper {
+  position: relative;
+  z-index: 1;
+  width: min(900px, 95vw);
+  padding: 3rem;
+  border-radius: 32px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  display: flex;
   flex-direction: column;
+  gap: 2rem;
+}
+
+header {
   text-align: center;
+  display: grid;
+  gap: 0.5rem;
 }
 
 h1 {
-  font-size: 2.5rem;
-  color: #fff;
-  text-shadow: 2px 2px 5px #000;
-  margin-bottom: 10px;
+  margin: 0;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 0 18px rgba(255, 221, 89, 0.6);
 }
 
 #typing {
-  font-size: 1.5rem;
-  color: #fff;
-  margin-bottom: 20px;
-  height: 40px;
+  font-size: 1.1rem;
+  min-height: 1.5rem;
+  color: var(--accent);
+  letter-spacing: 0.15em;
 }
 
-#quiz {
-  background: #fff;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+.quiz-card {
   display: none;
+  padding: 1.75rem;
+  border-radius: 20px;
+  border: 1px solid var(--panel-border);
+  background: rgba(18, 23, 41, 0.85);
+  box-shadow: inset 0 0 20px rgba(255, 204, 0, 0.08);
+  animation: pop 0.6s ease;
 }
 
-#quiz input {
-  margin-top: 10px;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+.quiz-card p {
+  margin: 0 0 0.75rem;
+  line-height: 1.6;
+}
+
+.quiz-inputs {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.quiz-inputs input {
+  flex: 1 1 220px;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(8, 11, 20, 0.9);
+  color: var(--text-light);
+}
+
+.quiz-inputs input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.quiz-inputs button {
+  padding: 0.75rem 1.75rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+  border: none;
+  color: #05070e;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quiz-inputs button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(255, 204, 0, 0.25);
 }
 
 #secretMessage {
   display: none;
-  font-size: 1.3rem;
-  color: #fff;
-  margin-top: 20px;
-  animation: pop 1s ease-in-out;
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  animation: pop 0.7s ease;
 }
 
-@keyframes pop {
-  0% {transform: scale(0);}
-  100% {transform: scale(1);}
+.celebration {
+  display: none;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.photo-slider {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.slides-window {
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.45);
+}
+
+.slides {
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.slide {
+  flex: 0 0 100%;
+  max-width: min(600px, 70vw);
+  display: flex;
+  flex-direction: column;
+  background: rgba(3, 8, 19, 0.9);
+}
+
+.slide img {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+
+.slide figcaption {
+  margin: 0;
+  padding: 1rem 1.5rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  background: rgba(255, 255, 255, 0.04);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.slider-nav {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: var(--accent);
+  font-size: 2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.slider-nav:hover {
+  background: rgba(255, 204, 0, 0.18);
+  transform: scale(1.08);
 }
 
 .balloon {
-  position: absolute;
-  bottom: -100px;
-  font-size: 3rem;
-  animation: floatUp 6s linear infinite;
+  position: fixed;
+  bottom: -90px;
+  font-size: 2.4rem;
+  animation: launchUp 6s linear infinite;
+  pointer-events: none;
+  z-index: 2;
 }
 
-@keyframes floatUp {
-  from { transform: translateY(0); }
-  to { transform: translateY(-120vh); }
+@keyframes launchUp {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-120vh) scale(1.2);
+    opacity: 0;
+  }
 }
 
-.balloon:nth-child(odd) {
-  animation-duration: 5s;
+.sparkle {
+  position: fixed;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.4) 60%, rgba(255, 255, 255, 0) 70%);
+  filter: drop-shadow(0 0 6px rgba(255, 204, 0, 0.8));
+  animation: sparkleFade 0.6s ease-out forwards;
+  z-index: 5;
+}
+
+@keyframes sparkleFade {
+  0% { transform: scale(0.2) translate(-50%, -50%); opacity: 1; }
+  50% { transform: scale(1.2) translate(-50%, -50%); opacity: 0.8; }
+  100% { transform: scale(0.1) translate(-50%, -50%); opacity: 0; }
+}
+
+@keyframes pop {
+  0% { transform: scale(0.75); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 720px) {
+  .ballistic-wrapper {
+    padding: 2.25rem 1.5rem;
+  }
+
+  .slide {
+    max-width: min(80vw, 500px);
+  }
+
+  .slider-nav {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+  }
 }
