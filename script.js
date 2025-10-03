@@ -116,28 +116,67 @@ function updateElapsedTime() {
 
 function initSlider() {
   const slidesWindow = document.querySelector(".slides-window");
-  const slidesContainer = document.querySelector(".slides");
-  const slides = document.querySelectorAll(".slide");
+  const slides = Array.from(document.querySelectorAll(".slide"));
   const prevButton = document.querySelector(".slider-nav.prev");
   const nextButton = document.querySelector(".slider-nav.next");
   let currentSlide = 0;
 
-  function updateSlidePosition() {
-    if (!slidesContainer || !slidesWindow) return;
-    const slideWidth = slidesWindow.getBoundingClientRect().width;
-    slidesContainer.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+  function updateSlides() {
+    if (!slidesWindow || !slides.length) return;
+    const windowWidth = slidesWindow.getBoundingClientRect().width;
+    const baseShift = Math.min(windowWidth / 2.2, 220);
+
+    slides.forEach((slide, index) => {
+      let offset = index - currentSlide;
+      const half = slides.length / 2;
+      if (offset > half) offset -= slides.length;
+      if (offset < -half) offset += slides.length;
+      const absOffset = Math.abs(offset);
+      const translateX = offset * baseShift;
+      const scale = Math.max(0.65, 1 - absOffset * 0.18);
+      const rotate = offset * -7;
+      const depthOpacity = absOffset > 2 ? 0 : Math.max(0.35, 1 - absOffset * 0.2);
+
+      slide.style.transform = `translate(-50%, -50%) translateX(${translateX}px) scale(${scale}) rotateY(${rotate}deg)`;
+      slide.style.zIndex = String(slides.length - absOffset);
+      slide.style.opacity = depthOpacity;
+      slide.style.filter = absOffset === 0 ? "none" : "brightness(0.78)";
+      slide.style.pointerEvents = absOffset <= 2 ? "auto" : "none";
+      slide.classList.toggle("is-active", offset === 0);
+      slide.setAttribute("aria-hidden", offset === 0 ? "false" : "true");
+      slide.setAttribute("tabindex", offset === 0 ? "-1" : "0");
+      slide.setAttribute("aria-pressed", offset === 0 ? "true" : "false");
+    });
   }
 
   function goToSlide(index) {
     if (!slides.length) return;
     currentSlide = (index + slides.length) % slides.length;
-    updateSlidePosition();
+    updateSlides();
   }
 
   prevButton?.addEventListener("click", () => goToSlide(currentSlide - 1));
   nextButton?.addEventListener("click", () => goToSlide(currentSlide + 1));
-  window.addEventListener("resize", updateSlidePosition);
-  updateSlidePosition();
+
+  slides.forEach((slide, index) => {
+    slide.setAttribute("role", "button");
+    slide.addEventListener("click", () => {
+      if (index !== currentSlide) {
+        goToSlide(index);
+      }
+    });
+    slide.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        if (index !== currentSlide) {
+          goToSlide(index);
+        }
+      }
+    });
+  });
+
+  window.addEventListener("resize", updateSlides);
+  updateSlides();
 }
 
 function createSparkle(x, y) {
@@ -150,9 +189,110 @@ function createSparkle(x, y) {
 }
 
 function handlePointerTrail() {
-  document.addEventListener("mousemove", (event) => {
+  document.addEventListener("pointermove", (event) => {
     createSparkle(event.clientX, event.clientY);
   });
+}
+
+function setupScrollReveal() {
+  const autoRevealSelectors = [
+    ".header-bar",
+    "#typing",
+    ".time-card__header",
+    ".time-grid",
+    ".celebration > *",
+    ".photo-section__intro > *",
+    ".closing-note p"
+  ];
+
+  autoRevealSelectors.forEach((selector) => {
+    document.querySelectorAll(selector).forEach((element) => {
+      if (!element.hasAttribute("data-reveal")) {
+        element.setAttribute("data-reveal", "");
+      }
+    });
+  });
+
+  const revealTargets = document.querySelectorAll("[data-reveal]");
+  if (!revealTargets.length) return;
+
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  if (prefersReducedMotion.matches) {
+    revealTargets.forEach((element) => element.classList.add("is-revealed"));
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-revealed");
+          obs.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      threshold: 0.2,
+      rootMargin: "0px 0px -10% 0px"
+    }
+  );
+
+  revealTargets.forEach((element) => observer.observe(element));
+}
+
+function setupAimFollowers() {
+  const targetCursor = document.getElementById("targetCursor");
+  const pistol = document.querySelector(".gadget.pistol");
+  const flashlight = document.querySelector(".gadget.flashlight");
+
+  if (!targetCursor && !pistol && !flashlight) return;
+
+  const updateAim = (element, pointerX, pointerY) => {
+    if (!element) return;
+    const rect = element.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height * 0.65;
+    const angle = Math.atan2(pointerY - centerY, pointerX - centerX);
+    element.style.setProperty("--aim-angle", `${angle}rad`);
+  };
+
+  const revealCursor = () => {
+    document.body.classList.add("is-aiming");
+    targetCursor?.classList.remove("is-hidden");
+  };
+
+  const handlePointerMove = (event) => {
+    const pointerX = event.clientX;
+    const pointerY = event.clientY;
+    if (Number.isNaN(pointerX) || Number.isNaN(pointerY)) return;
+
+    revealCursor();
+    if (targetCursor) {
+      targetCursor.style.setProperty("--cursor-x", `${pointerX}px`);
+      targetCursor.style.setProperty("--cursor-y", `${pointerY}px`);
+    }
+    updateAim(pistol, pointerX, pointerY);
+    updateAim(flashlight, pointerX, pointerY);
+  };
+
+  document.addEventListener("pointermove", handlePointerMove);
+  document.addEventListener("pointerleave", () => {
+    targetCursor?.classList.add("is-hidden");
+    document.body.classList.remove("is-aiming");
+  });
+  document.addEventListener("pointerenter", () => {
+    if (!targetCursor) return;
+    revealCursor();
+  });
+
+  const initialX = window.innerWidth / 2;
+  const initialY = window.innerHeight / 2;
+  if (targetCursor) {
+    targetCursor.style.setProperty("--cursor-x", `${initialX}px`);
+    targetCursor.style.setProperty("--cursor-y", `${initialY}px`);
+  }
+  updateAim(pistol, initialX, initialY);
+  updateAim(flashlight, initialX, initialY);
 }
 
 function setupThemeToggle() {
@@ -356,6 +496,8 @@ window.addEventListener("DOMContentLoaded", () => {
   handlePointerTrail();
   startBalloons();
   setupThemeToggle();
+  setupScrollReveal();
+  setupAimFollowers();
   setupCanvas();
   createConfetti();
   animate();

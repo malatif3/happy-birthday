@@ -9,7 +9,7 @@
 <body>
   <canvas id="confetti"></canvas>
   <div class="ballistic-wrapper">
-    <header>
+    <header data-reveal>
       <div class="header-bar">
         <h1>🎯 Happy Ballistic Birthday!</h1>
         <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Toggle light and dark mode">
@@ -20,79 +20,109 @@
       <p id="typing" aria-live="polite"></p>
     </header>
 
-    <section class="time-card" aria-labelledby="timeHeading">
+    <section class="time-card" aria-labelledby="timeHeading" data-reveal>
       <div class="time-card__header">
         <h2 id="timeHeading">Time Since October 4, 1974 (California, GMT-7)</h2>
         <p>Here&apos;s how long this incredible journey has been unfolding on Pacific time.</p>
         <p class="timezone-clock" aria-live="polite">Current time in California: <span id="timezoneClock">--:--:--</span></p>
       </div>
       <div class="time-grid" role="presentation">
-        <article class="time-unit">
+        <article class="time-unit" data-reveal>
           <span class="time-number" id="years">0</span>
           <span class="time-label">Years</span>
         </article>
-        <article class="time-unit">
+        <article class="time-unit" data-reveal>
           <span class="time-number" id="months">0</span>
           <span class="time-label">Months</span>
         </article>
-        <article class="time-unit">
+        <article class="time-unit" data-reveal>
           <span class="time-number" id="days">0</span>
           <span class="time-label">Days</span>
         </article>
-        <article class="time-unit">
+        <article class="time-unit" data-reveal>
           <span class="time-number" id="hours">0</span>
           <span class="time-label">Hours</span>
         </article>
-        <article class="time-unit">
+        <article class="time-unit" data-reveal>
           <span class="time-number" id="minutes">0</span>
           <span class="time-label">Minutes</span>
         </article>
-        <article class="time-unit">
+        <article class="time-unit" data-reveal>
           <span class="time-number" id="seconds">0</span>
           <span class="time-label">Seconds</span>
         </article>
       </div>
     </section>
 
-    <section class="celebration" aria-live="polite">
+    <section class="celebration" aria-live="polite" data-reveal>
       <p class="celebration__message">🎉 Happy Birthday! May every dream you&apos;ve carefully kept come to life one by one.</p>
       <p class="celebration__note">Keep scrolling—your story has so many more chapters waiting to be filled with photos and memories.</p>
     </section>
 
-    <section class="photo-section" aria-labelledby="galleryHeading">
+    <section class="photo-section" aria-labelledby="galleryHeading" data-reveal>
       <div class="photo-section__intro">
         <h2 id="galleryHeading">Memory Gallery (Placeholder)</h2>
         <p>This is where the highlight reel will live. For now, swipe left or right to preview the placeholders.</p>
       </div>
       <div class="photo-slider" aria-label="Swipeable photo gallery">
-        <button class="slider-nav prev" aria-label="Previous photo" type="button">‹</button>
+        <button class="slider-nav prev" aria-label="Previous photo" type="button" data-reveal>‹</button>
         <div class="slides-window">
           <div class="slides">
-            <figure class="slide">
+            <figure class="slide" data-reveal>
               <div class="photo-placeholder">The first snapshot will appear here.</div>
               <figcaption>Start planning the story behind this standout moment.</figcaption>
             </figure>
-            <figure class="slide">
+            <figure class="slide" data-reveal>
               <div class="photo-placeholder">A space reserved for togetherness.</div>
               <figcaption>Capture the warmth of being surrounded by your favorite people.</figcaption>
             </figure>
-            <figure class="slide">
+            <figure class="slide" data-reveal>
               <div class="photo-placeholder">Special memories coming soon.</div>
               <figcaption>New adventures are already lining up for a place in this frame.</figcaption>
             </figure>
-            <figure class="slide">
+            <figure class="slide" data-reveal>
               <div class="photo-placeholder">Room reserved for a surprise.</div>
               <figcaption>Maybe a secret photo from your closest crew?</figcaption>
             </figure>
           </div>
         </div>
-        <button class="slider-nav next" aria-label="Next photo" type="button">›</button>
+        <button class="slider-nav next" aria-label="Next photo" type="button" data-reveal>›</button>
       </div>
     </section>
 
-    <footer class="closing-note">
+    <footer class="closing-note" data-reveal>
       <p>Thank you for making every mile of this meaningful journey unforgettable. Let&apos;s keep the celebration going with bright smiles and an open heart.</p>
     </footer>
+  </div>
+
+  <div class="crossline-tape" aria-hidden="true">
+    <span>POLICE LINE DO NOT CROSS — KEEP BACK —</span>
+    <span>POLICE LINE DO NOT CROSS — KEEP BACK —</span>
+    <span>POLICE LINE DO NOT CROSS — KEEP BACK —</span>
+  </div>
+
+  <div class="gadget pistol" aria-hidden="true">
+    <div class="pistol__frame">
+      <span class="pistol__barrel"></span>
+      <span class="pistol__body"></span>
+      <span class="pistol__handle"></span>
+      <span class="pistol__trigger"></span>
+    </div>
+  </div>
+
+  <div class="gadget flashlight" aria-hidden="true">
+    <div class="flashlight__casing">
+      <span class="flashlight__head"></span>
+      <span class="flashlight__beam"></span>
+      <span class="flashlight__body"></span>
+    </div>
+  </div>
+
+  <div class="target-cursor" id="targetCursor" aria-hidden="true">
+    <span class="target-cursor__ring"></span>
+    <span class="target-cursor__cross target-cursor__cross--vertical"></span>
+    <span class="target-cursor__cross target-cursor__cross--horizontal"></span>
+    <span class="target-cursor__dot"></span>
   </div>
 
   <script src="script.js"></script>
