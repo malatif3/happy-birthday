@@ -116,28 +116,64 @@ function updateElapsedTime() {
 
 function initSlider() {
   const slidesWindow = document.querySelector(".slides-window");
-  const slidesContainer = document.querySelector(".slides");
-  const slides = document.querySelectorAll(".slide");
+  const slides = Array.from(document.querySelectorAll(".slide"));
   const prevButton = document.querySelector(".slider-nav.prev");
   const nextButton = document.querySelector(".slider-nav.next");
   let currentSlide = 0;
 
-  function updateSlidePosition() {
-    if (!slidesContainer || !slidesWindow) return;
-    const slideWidth = slidesWindow.getBoundingClientRect().width;
-    slidesContainer.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+  function updateSlides() {
+    if (!slidesWindow || !slides.length) return;
+    const windowWidth = slidesWindow.getBoundingClientRect().width;
+    const baseShift = Math.min(windowWidth / 2.2, 220);
+
+    slides.forEach((slide, index) => {
+      const offset = index - currentSlide;
+      const absOffset = Math.abs(offset);
+      const translateX = offset * baseShift;
+      const scale = Math.max(0.65, 1 - absOffset * 0.18);
+      const rotate = offset * -7;
+      const depthOpacity = absOffset > 2 ? 0 : Math.max(0.35, 1 - absOffset * 0.2);
+
+      slide.style.transform = `translate(-50%, -50%) translateX(${translateX}px) scale(${scale}) rotateY(${rotate}deg)`;
+      slide.style.zIndex = String(slides.length - absOffset);
+      slide.style.opacity = depthOpacity;
+      slide.style.filter = absOffset === 0 ? "none" : "brightness(0.78)";
+      slide.style.pointerEvents = absOffset <= 2 ? "auto" : "none";
+      slide.classList.toggle("is-active", offset === 0);
+      slide.setAttribute("aria-hidden", offset === 0 ? "false" : "true");
+      slide.setAttribute("tabindex", offset === 0 ? "-1" : "0");
+      slide.setAttribute("aria-pressed", offset === 0 ? "true" : "false");
+    });
   }
 
   function goToSlide(index) {
     if (!slides.length) return;
     currentSlide = (index + slides.length) % slides.length;
-    updateSlidePosition();
+    updateSlides();
   }
 
   prevButton?.addEventListener("click", () => goToSlide(currentSlide - 1));
   nextButton?.addEventListener("click", () => goToSlide(currentSlide + 1));
-  window.addEventListener("resize", updateSlidePosition);
-  updateSlidePosition();
+
+  slides.forEach((slide, index) => {
+    slide.setAttribute("role", "button");
+    slide.addEventListener("click", () => {
+      if (index !== currentSlide) {
+        goToSlide(index);
+      }
+    });
+    slide.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        if (index !== currentSlide) {
+          goToSlide(index);
+        }
+      }
+    });
+  });
+
+  window.addEventListener("resize", updateSlides);
+  updateSlides();
 }
 
 function createSparkle(x, y) {
