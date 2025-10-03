@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,42 +11,81 @@
   <div class="ballistic-wrapper">
     <header>
       <h1>🎯 Happy Ballistic Birthday!</h1>
-      <p id="typing"></p>
+      <p id="typing" aria-live="polite"></p>
     </header>
 
-    <section id="quiz" class="quiz-card">
-      <p>🕵️ Sebelum lanjut, jawab teka-teki ini:</p>
-      <p><strong>"Aku bulat, ada lilin di atas, aku manis. Apakah aku?"</strong></p>
-      <div class="quiz-inputs">
-        <input type="text" id="answer" placeholder="Tulis jawabannya...">
-        <button id="quizButton" onclick="checkAnswer()">Jawab</button>
+    <section class="time-card" aria-labelledby="timeHeading">
+      <div class="time-card__header">
+        <h2 id="timeHeading">Waktu Berjalan Sejak 4 Oktober 1974</h2>
+        <p>Kita rayakan setiap detik berharga yang telah menemani perjalananmu.</p>
+      </div>
+      <div class="time-grid" role="presentation">
+        <article class="time-unit">
+          <span class="time-number" id="years">0</span>
+          <span class="time-label">Tahun</span>
+        </article>
+        <article class="time-unit">
+          <span class="time-number" id="months">0</span>
+          <span class="time-label">Bulan</span>
+        </article>
+        <article class="time-unit">
+          <span class="time-number" id="days">0</span>
+          <span class="time-label">Hari</span>
+        </article>
+        <article class="time-unit">
+          <span class="time-number" id="hours">0</span>
+          <span class="time-label">Jam</span>
+        </article>
+        <article class="time-unit">
+          <span class="time-number" id="minutes">0</span>
+          <span class="time-label">Menit</span>
+        </article>
+        <article class="time-unit">
+          <span class="time-number" id="seconds">0</span>
+          <span class="time-label">Detik</span>
+        </article>
       </div>
     </section>
 
-    <section id="celebration" class="celebration" aria-live="polite">
-      <div id="secretMessage">🎉 Selamat Ulang Tahun! Semoga panjang umur, sehat selalu, dan bahagia! 🎁</div>
+    <section class="celebration" aria-live="polite">
+      <p class="celebration__message">🎉 Selamat Ulang Tahun! Semoga segala doa, asa, dan rencana yang kamu simpan rapi perlahan satu per satu jadi kenyataan.</p>
+      <p class="celebration__note">Gulir terus ke bawah, karena cerita indahmu masih panjang dan siap diisi dengan foto serta kenangan baru.</p>
+    </section>
 
-      <div class="photo-slider" aria-label="Galeri foto kenangan">
-        <button class="slider-nav prev" aria-label="Foto sebelumnya">‹</button>
+    <section class="photo-section" aria-labelledby="galleryHeading">
+      <div class="photo-section__intro">
+        <h2 id="galleryHeading">Galeri Kenangan (Placeholder)</h2>
+        <p>Tempat foto-foto spesialmu akan tinggal. Untuk sekarang, geser ke kanan atau kiri untuk melihat placeholder-nya.</p>
+      </div>
+      <div class="photo-slider" aria-label="Galeri foto yang dapat digeser">
+        <button class="slider-nav prev" aria-label="Foto sebelumnya" type="button">‹</button>
         <div class="slides-window">
           <div class="slides">
             <figure class="slide">
-              <img src="https://images.unsplash.com/photo-1528716321680-815a8cdb8cbe?auto=format&fit=crop&w=900&q=80" alt="Balon warna-warni dengan nuansa pesta">
-              <figcaption>Kenangan seru di pesta tahun lalu.</figcaption>
+              <div class="photo-placeholder">Foto pertama akan tampil di sini.</div>
+              <figcaption>Siapkan cerita terbaik untuk momen istimewa ini.</figcaption>
             </figure>
             <figure class="slide">
-              <img src="https://images.unsplash.com/photo-1529653762956-b0a27278529c?auto=format&fit=crop&w=900&q=80" alt="Kue ulang tahun dengan dekorasi mewah">
-              <figcaption>Kue spesial penuh makna.</figcaption>
+              <div class="photo-placeholder">Tempat untuk potret kebersamaan.</div>
+              <figcaption>Tinggalkan jejak kebersamaan yang hangat.</figcaption>
             </figure>
             <figure class="slide">
-              <img src="https://images.unsplash.com/photo-1486427944299-d1955d23e34d?auto=format&fit=crop&w=900&q=80" alt="Sahabat tertawa bersama di pesta">
-              <figcaption>Momen tawa bersama sahabat.</figcaption>
+              <div class="photo-placeholder">Kenangan spesial menyusul segera.</div>
+              <figcaption>Kenangan baru siap kamu simpan di sini.</figcaption>
+            </figure>
+            <figure class="slide">
+              <div class="photo-placeholder">Ruangan kosong untuk kejutan.</div>
+              <figcaption>Mungkin foto kejutan dari sahabat terdekatmu?</figcaption>
             </figure>
           </div>
         </div>
-        <button class="slider-nav next" aria-label="Foto berikutnya">›</button>
+        <button class="slider-nav next" aria-label="Foto berikutnya" type="button">›</button>
       </div>
     </section>
+
+    <footer class="closing-note">
+      <p>Terima kasih sudah menjadi bagian dari perjalanan panjang nan bermakna ini. Mari lanjutkan perayaannya dengan senyum lebar dan hati ringan.</p>
+    </footer>
   </div>
 
   <script src="script.js"></script>
