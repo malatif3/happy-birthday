@@ -1,5 +1,23 @@
-const typingText = "Setiap detikmu begitu berarti — mari rayakan perjalanan panjang ini.";
-const baseDate = new Date(1974, 9, 4, 0, 0, 0);
+const typingText = "Every second matters—let's celebrate this remarkable journey.";
+const baseDateParts = {
+  year: 1974,
+  month: 10,
+  day: 4,
+  hour: 0,
+  minute: 0,
+  second: 0
+};
+const timezoneFormatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: "Etc/GMT+7",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: false
+});
+const numberFormatter = new Intl.NumberFormat("en-US");
 let typingIndex = 0;
 
 function typingEffect() {
@@ -17,17 +35,35 @@ function typingEffect() {
   typeNext();
 }
 
-function updateElapsedTime() {
-  const now = new Date();
-  if (now < baseDate) return;
+function getTimezoneParts(date) {
+  return timezoneFormatter.formatToParts(date).reduce((acc, part) => {
+    if (part.type !== "literal") {
+      acc[part.type] = Number(part.value);
+    }
+    return acc;
+  }, {});
+}
 
-  let years = now.getFullYear() - baseDate.getFullYear();
-  let months = now.getMonth() - baseDate.getMonth();
-  let days = now.getDate() - baseDate.getDate();
+function updateTimezoneClock() {
+  const clock = document.getElementById("timezoneClock");
+  if (!clock) return;
+
+  const parts = getTimezoneParts(new Date());
+  const pad = (value) => String(value).padStart(2, "0");
+  clock.textContent = `${pad(parts.hour)}:${pad(parts.minute)}:${pad(parts.second)}`;
+}
+
+function updateElapsedTime() {
+  const nowParts = getTimezoneParts(new Date());
+  if (!nowParts.year) return;
+
+  let years = nowParts.year - baseDateParts.year;
+  let months = nowParts.month - baseDateParts.month;
+  let days = nowParts.day - baseDateParts.day;
 
   if (days < 0) {
     months -= 1;
-    const prevMonthLength = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+    const prevMonthLength = new Date(Date.UTC(nowParts.year, nowParts.month - 1, 0)).getUTCDate();
     days += prevMonthLength;
   }
 
@@ -36,12 +72,25 @@ function updateElapsedTime() {
     months += 12;
   }
 
-  const anchor = new Date(baseDate);
-  anchor.setFullYear(baseDate.getFullYear() + years);
-  anchor.setMonth(baseDate.getMonth() + months);
-  anchor.setDate(baseDate.getDate() + days);
+  const anchorUtc = Date.UTC(
+    baseDateParts.year + years,
+    baseDateParts.month - 1 + months,
+    baseDateParts.day + days,
+    baseDateParts.hour,
+    baseDateParts.minute,
+    baseDateParts.second
+  );
 
-  let diffMs = now - anchor;
+  const nowUtc = Date.UTC(
+    nowParts.year,
+    nowParts.month - 1,
+    nowParts.day,
+    nowParts.hour,
+    nowParts.minute,
+    nowParts.second
+  );
+
+  let diffMs = nowUtc - anchorUtc;
   const hours = Math.floor(diffMs / (1000 * 60 * 60));
   diffMs -= hours * 60 * 60 * 1000;
   const minutes = Math.floor(diffMs / (1000 * 60));
@@ -60,7 +109,7 @@ function updateElapsedTime() {
   Object.entries(map).forEach(([key, value]) => {
     const target = document.getElementById(key);
     if (target) {
-      target.textContent = value.toLocaleString("id-ID");
+      target.textContent = numberFormatter.format(value);
     }
   });
 }
@@ -103,6 +152,33 @@ function createSparkle(x, y) {
 function handlePointerTrail() {
   document.addEventListener("mousemove", (event) => {
     createSparkle(event.clientX, event.clientY);
+  });
+}
+
+function setupThemeToggle() {
+  const toggle = document.querySelector("[data-theme-toggle]");
+  if (!toggle) return;
+
+  const root = document.documentElement;
+  const icon = toggle.querySelector(".theme-toggle__icon");
+  const label = toggle.querySelector(".theme-toggle__label");
+  const storageKey = "hb-theme";
+
+  function applyTheme(theme) {
+    const normalized = theme === "light" ? "light" : "dark";
+    root.dataset.theme = normalized;
+    localStorage.setItem(storageKey, normalized);
+    toggle.setAttribute("aria-pressed", normalized === "light" ? "true" : "false");
+    if (icon) icon.textContent = normalized === "light" ? "☀️" : "🌙";
+    if (label) label.textContent = normalized === "light" ? "Light" : "Dark";
+  }
+
+  const storedTheme = localStorage.getItem(storageKey);
+  applyTheme(storedTheme);
+
+  toggle.addEventListener("click", () => {
+    const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
+    applyTheme(nextTheme);
   });
 }
 
@@ -274,9 +350,12 @@ window.addEventListener("DOMContentLoaded", () => {
   typingEffect();
   updateElapsedTime();
   setInterval(updateElapsedTime, 1000);
+  updateTimezoneClock();
+  setInterval(updateTimezoneClock, 1000);
   initSlider();
   handlePointerTrail();
   startBalloons();
+  setupThemeToggle();
   setupCanvas();
   createConfetti();
   animate();

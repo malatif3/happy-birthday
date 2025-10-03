@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,81 +10,88 @@
   <canvas id="confetti"></canvas>
   <div class="ballistic-wrapper">
     <header>
-      <h1>🎯 Happy Ballistic Birthday!</h1>
+      <div class="header-bar">
+        <h1>🎯 Happy Ballistic Birthday!</h1>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Toggle light and dark mode">
+          <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
+          <span class="theme-toggle__label">Dark</span>
+        </button>
+      </div>
       <p id="typing" aria-live="polite"></p>
     </header>
 
     <section class="time-card" aria-labelledby="timeHeading">
       <div class="time-card__header">
-        <h2 id="timeHeading">Waktu Berjalan Sejak 4 Oktober 1974</h2>
-        <p>Kita rayakan setiap detik berharga yang telah menemani perjalananmu.</p>
+        <h2 id="timeHeading">Time Since October 4, 1974 (California, GMT-7)</h2>
+        <p>Here&apos;s how long this incredible journey has been unfolding on Pacific time.</p>
+        <p class="timezone-clock" aria-live="polite">Current time in California: <span id="timezoneClock">--:--:--</span></p>
       </div>
       <div class="time-grid" role="presentation">
         <article class="time-unit">
           <span class="time-number" id="years">0</span>
-          <span class="time-label">Tahun</span>
+          <span class="time-label">Years</span>
         </article>
         <article class="time-unit">
           <span class="time-number" id="months">0</span>
-          <span class="time-label">Bulan</span>
+          <span class="time-label">Months</span>
         </article>
         <article class="time-unit">
           <span class="time-number" id="days">0</span>
-          <span class="time-label">Hari</span>
+          <span class="time-label">Days</span>
         </article>
         <article class="time-unit">
           <span class="time-number" id="hours">0</span>
-          <span class="time-label">Jam</span>
+          <span class="time-label">Hours</span>
         </article>
         <article class="time-unit">
           <span class="time-number" id="minutes">0</span>
-          <span class="time-label">Menit</span>
+          <span class="time-label">Minutes</span>
         </article>
         <article class="time-unit">
           <span class="time-number" id="seconds">0</span>
-          <span class="time-label">Detik</span>
+          <span class="time-label">Seconds</span>
         </article>
       </div>
     </section>
 
     <section class="celebration" aria-live="polite">
-      <p class="celebration__message">🎉 Selamat Ulang Tahun! Semoga segala doa, asa, dan rencana yang kamu simpan rapi perlahan satu per satu jadi kenyataan.</p>
-      <p class="celebration__note">Gulir terus ke bawah, karena cerita indahmu masih panjang dan siap diisi dengan foto serta kenangan baru.</p>
+      <p class="celebration__message">🎉 Happy Birthday! May every dream you&apos;ve carefully kept come to life one by one.</p>
+      <p class="celebration__note">Keep scrolling—your story has so many more chapters waiting to be filled with photos and memories.</p>
     </section>
 
     <section class="photo-section" aria-labelledby="galleryHeading">
       <div class="photo-section__intro">
-        <h2 id="galleryHeading">Galeri Kenangan (Placeholder)</h2>
-        <p>Tempat foto-foto spesialmu akan tinggal. Untuk sekarang, geser ke kanan atau kiri untuk melihat placeholder-nya.</p>
+        <h2 id="galleryHeading">Memory Gallery (Placeholder)</h2>
+        <p>This is where the highlight reel will live. For now, swipe left or right to preview the placeholders.</p>
       </div>
-      <div class="photo-slider" aria-label="Galeri foto yang dapat digeser">
-        <button class="slider-nav prev" aria-label="Foto sebelumnya" type="button">‹</button>
+      <div class="photo-slider" aria-label="Swipeable photo gallery">
+        <button class="slider-nav prev" aria-label="Previous photo" type="button">‹</button>
         <div class="slides-window">
           <div class="slides">
             <figure class="slide">
-              <div class="photo-placeholder">Foto pertama akan tampil di sini.</div>
-              <figcaption>Siapkan cerita terbaik untuk momen istimewa ini.</figcaption>
+              <div class="photo-placeholder">The first snapshot will appear here.</div>
+              <figcaption>Start planning the story behind this standout moment.</figcaption>
             </figure>
             <figure class="slide">
-              <div class="photo-placeholder">Tempat untuk potret kebersamaan.</div>
-              <figcaption>Tinggalkan jejak kebersamaan yang hangat.</figcaption>
+              <div class="photo-placeholder">A space reserved for togetherness.</div>
+              <figcaption>Capture the warmth of being surrounded by your favorite people.</figcaption>
             </figure>
             <figure class="slide">
-              <div class="photo-placeholder">Kenangan spesial menyusul segera.</div>
-              <figcaption>Kenangan baru siap kamu simpan di sini.</figcaption>
+              <div class="photo-placeholder">Special memories coming soon.</div>
+              <figcaption>New adventures are already lining up for a place in this frame.</figcaption>
             </figure>
             <figure class="slide">
-              <div class="photo-placeholder">Ruangan kosong untuk kejutan.</div>
-              <figcaption>Mungkin foto kejutan dari sahabat terdekatmu?</figcaption>
+              <div class="photo-placeholder">Room reserved for a surprise.</div>
+              <figcaption>Maybe a secret photo from your closest crew?</figcaption>
             </figure>
           </div>
         </div>
-        <button class="slider-nav next" aria-label="Foto berikutnya" type="button">›</button>
+        <button class="slider-nav next" aria-label="Next photo" type="button">›</button>
       </div>
     </section>
 
     <footer class="closing-note">
-      <p>Terima kasih sudah menjadi bagian dari perjalanan panjang nan bermakna ini. Mari lanjutkan perayaannya dengan senyum lebar dan hati ringan.</p>
+      <p>Thank you for making every mile of this meaningful journey unforgettable. Let&apos;s keep the celebration going with bright smiles and an open heart.</p>
     </footer>
   </div>
 
