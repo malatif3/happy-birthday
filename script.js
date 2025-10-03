@@ -127,7 +127,10 @@ function initSlider() {
     const baseShift = Math.min(windowWidth / 2.2, 220);
 
     slides.forEach((slide, index) => {
-      const offset = index - currentSlide;
+      let offset = index - currentSlide;
+      const half = slides.length / 2;
+      if (offset > half) offset -= slides.length;
+      if (offset < -half) offset += slides.length;
       const absOffset = Math.abs(offset);
       const translateX = offset * baseShift;
       const scale = Math.max(0.65, 1 - absOffset * 0.18);
