@@ -189,9 +189,110 @@ function createSparkle(x, y) {
 }
 
 function handlePointerTrail() {
-  document.addEventListener("mousemove", (event) => {
+  document.addEventListener("pointermove", (event) => {
     createSparkle(event.clientX, event.clientY);
   });
+}
+
+function setupScrollReveal() {
+  const autoRevealSelectors = [
+    ".header-bar",
+    "#typing",
+    ".time-card__header",
+    ".time-grid",
+    ".celebration > *",
+    ".photo-section__intro > *",
+    ".closing-note p"
+  ];
+
+  autoRevealSelectors.forEach((selector) => {
+    document.querySelectorAll(selector).forEach((element) => {
+      if (!element.hasAttribute("data-reveal")) {
+        element.setAttribute("data-reveal", "");
+      }
+    });
+  });
+
+  const revealTargets = document.querySelectorAll("[data-reveal]");
+  if (!revealTargets.length) return;
+
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  if (prefersReducedMotion.matches) {
+    revealTargets.forEach((element) => element.classList.add("is-revealed"));
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-revealed");
+          obs.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      threshold: 0.2,
+      rootMargin: "0px 0px -10% 0px"
+    }
+  );
+
+  revealTargets.forEach((element) => observer.observe(element));
+}
+
+function setupAimFollowers() {
+  const targetCursor = document.getElementById("targetCursor");
+  const pistol = document.querySelector(".gadget.pistol");
+  const flashlight = document.querySelector(".gadget.flashlight");
+
+  if (!targetCursor && !pistol && !flashlight) return;
+
+  const updateAim = (element, pointerX, pointerY) => {
+    if (!element) return;
+    const rect = element.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height * 0.65;
+    const angle = Math.atan2(pointerY - centerY, pointerX - centerX);
+    element.style.setProperty("--aim-angle", `${angle}rad`);
+  };
+
+  const revealCursor = () => {
+    document.body.classList.add("is-aiming");
+    targetCursor?.classList.remove("is-hidden");
+  };
+
+  const handlePointerMove = (event) => {
+    const pointerX = event.clientX;
+    const pointerY = event.clientY;
+    if (Number.isNaN(pointerX) || Number.isNaN(pointerY)) return;
+
+    revealCursor();
+    if (targetCursor) {
+      targetCursor.style.setProperty("--cursor-x", `${pointerX}px`);
+      targetCursor.style.setProperty("--cursor-y", `${pointerY}px`);
+    }
+    updateAim(pistol, pointerX, pointerY);
+    updateAim(flashlight, pointerX, pointerY);
+  };
+
+  document.addEventListener("pointermove", handlePointerMove);
+  document.addEventListener("pointerleave", () => {
+    targetCursor?.classList.add("is-hidden");
+    document.body.classList.remove("is-aiming");
+  });
+  document.addEventListener("pointerenter", () => {
+    if (!targetCursor) return;
+    revealCursor();
+  });
+
+  const initialX = window.innerWidth / 2;
+  const initialY = window.innerHeight / 2;
+  if (targetCursor) {
+    targetCursor.style.setProperty("--cursor-x", `${initialX}px`);
+    targetCursor.style.setProperty("--cursor-y", `${initialY}px`);
+  }
+  updateAim(pistol, initialX, initialY);
+  updateAim(flashlight, initialX, initialY);
 }
 
 function setupThemeToggle() {
@@ -395,6 +496,8 @@ window.addEventListener("DOMContentLoaded", () => {
   handlePointerTrail();
   startBalloons();
   setupThemeToggle();
+  setupScrollReveal();
+  setupAimFollowers();
   setupCanvas();
   createConfetti();
   animate();

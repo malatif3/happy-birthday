@@ -42,6 +42,7 @@ body {
   overflow: hidden auto;
   position: relative;
   padding-block: clamp(4rem, 8vw, 6rem) clamp(2.5rem, 5vw, 4rem);
+  cursor: none;
 }
 
 #confetti {
@@ -490,5 +491,243 @@ h1 {
     width: 44px;
     height: 44px;
     font-size: 1.6rem;
+  }
+}
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(35px) scale(0.98);
+  transition: transform 0.75s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.75s ease;
+  will-change: transform, opacity;
+}
+
+[data-reveal].is-revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+.crossline-tape {
+  position: fixed;
+  inset-inline: 0;
+  bottom: -2.75rem;
+  display: flex;
+  justify-content: center;
+  gap: clamp(1.5rem, 6vw, 3rem);
+  padding-block: clamp(0.5rem, 1.5vw, 0.85rem);
+  pointer-events: none;
+  z-index: 8;
+  transform: rotate(-2deg);
+}
+
+.crossline-tape span {
+  font-weight: 700;
+  font-size: clamp(0.75rem, 1.8vw, 1.1rem);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  background: repeating-linear-gradient(135deg, #ffd700 0px, #ffd700 14px, #141414 14px, #141414 28px);
+  color: #141414;
+  padding: clamp(0.45rem, 1.2vw, 0.75rem) clamp(1.2rem, 3vw, 2rem);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.45);
+  border: 3px solid #141414;
+  border-radius: 12px;
+  text-shadow: none;
+  min-width: clamp(220px, 32vw, 420px);
+}
+
+.gadget {
+  position: fixed;
+  bottom: clamp(2.5rem, 7vw, 4rem);
+  width: clamp(120px, 16vw, 180px);
+  height: clamp(90px, 12vw, 140px);
+  z-index: 9;
+  transform-origin: 50% 80%;
+  transform: rotate(var(--aim-angle, 0rad));
+  transition: transform 0.18s ease-out;
+  pointer-events: none;
+}
+
+.gadget.pistol {
+  right: clamp(1.5rem, 6vw, 3rem);
+  transform-origin: 70% 70%;
+}
+
+.gadget.flashlight {
+  left: clamp(1.5rem, 6vw, 3rem);
+  transform-origin: 30% 70%;
+}
+
+.pistol__frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.pistol__barrel {
+  position: absolute;
+  top: 10%;
+  right: 4%;
+  width: 62%;
+  height: 22%;
+  border-radius: 14px;
+  background: linear-gradient(120deg, rgba(18, 23, 36, 0.95), rgba(58, 70, 88, 0.95));
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.15);
+}
+
+.pistol__body {
+  position: absolute;
+  top: 32%;
+  right: 16%;
+  width: 52%;
+  height: 36%;
+  border-radius: 12px;
+  background: linear-gradient(140deg, rgba(30, 34, 45, 1), rgba(86, 92, 104, 0.9));
+  box-shadow: inset 0 0 16px rgba(255, 255, 255, 0.12), 0 12px 22px rgba(0, 0, 0, 0.55);
+}
+
+.pistol__handle {
+  position: absolute;
+  bottom: 12%;
+  right: 38%;
+  width: 28%;
+  height: 52%;
+  border-radius: 12px 12px 30px 30px;
+  background: linear-gradient(160deg, #2a1d0f, #4c341b);
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.4), 0 10px 20px rgba(0, 0, 0, 0.55);
+}
+
+.pistol__trigger {
+  position: absolute;
+  bottom: 24%;
+  right: 32%;
+  width: 16%;
+  height: 24%;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 204, 0, 0.75);
+  border-left-color: transparent;
+  transform: rotate(18deg);
+}
+
+.flashlight__casing {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.flashlight__body {
+  position: absolute;
+  bottom: 12%;
+  left: 30%;
+  width: 46%;
+  height: 42%;
+  border-radius: 18px;
+  background: linear-gradient(150deg, #161b2c, #2e3954);
+  box-shadow: inset 0 0 14px rgba(255, 255, 255, 0.12), 0 12px 25px rgba(0, 0, 0, 0.6);
+}
+
+.flashlight__head {
+  position: absolute;
+  bottom: 20%;
+  left: 62%;
+  width: 30%;
+  height: 28%;
+  border-radius: 14px;
+  background: linear-gradient(140deg, #ffcc00, #f57c00);
+  box-shadow: 0 0 25px rgba(255, 204, 0, 0.45);
+}
+
+.flashlight__beam {
+  position: absolute;
+  bottom: 30%;
+  left: 82%;
+  width: 220%;
+  height: 120%;
+  transform-origin: left center;
+  transform: translateX(-10%) skewX(-8deg);
+  background: radial-gradient(ellipse at left, rgba(255, 240, 180, 0.42) 0%, rgba(255, 210, 90, 0.22) 35%, rgba(255, 175, 0, 0.05) 100%);
+  filter: blur(2px);
+  mix-blend-mode: screen;
+}
+
+.target-cursor {
+  position: fixed;
+  width: clamp(28px, 4vw, 42px);
+  height: clamp(28px, 4vw, 42px);
+  left: 0;
+  top: 0;
+  transform: translate(var(--cursor-x, 50vw), var(--cursor-y, 50vh)) translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 15;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.04s linear;
+}
+
+.target-cursor__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 204, 0, 0.9);
+  box-shadow: 0 0 12px rgba(255, 204, 0, 0.6);
+}
+
+.target-cursor__cross {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.target-cursor__cross--vertical {
+  width: 2px;
+  height: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.target-cursor__cross--horizontal {
+  height: 2px;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.target-cursor__dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff5f6d;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px rgba(255, 95, 109, 0.7);
+}
+
+body.is-aiming .target-cursor {
+  opacity: 1;
+}
+
+.target-cursor.is-hidden {
+  opacity: 0;
+}
+
+@media (max-width: 620px) {
+  .crossline-tape {
+    bottom: -3.5rem;
+    transform: rotate(-3deg);
+  }
+
+  .crossline-tape span {
+    letter-spacing: 0.32em;
+  }
+
+  .gadget {
+    width: clamp(90px, 28vw, 140px);
+    height: clamp(70px, 22vw, 110px);
   }
 }
