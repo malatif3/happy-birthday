@@ -1,83 +1,96 @@
-// ✨ Efek typing bertema balistik
-const text = "Klik sekali untuk memulai misi ulang tahun 🎯";
+const typingText = "Setiap detikmu begitu berarti — mari rayakan perjalanan panjang ini.";
+const baseDate = new Date(1974, 9, 4, 0, 0, 0);
 let typingIndex = 0;
-let typingStarted = false;
 
 function typingEffect() {
-  if (typingStarted) return;
-  typingStarted = true;
-
   const typingContainer = document.getElementById("typing");
+  if (!typingContainer) return;
+
   function typeNext() {
-    if (typingIndex < text.length) {
-      typingContainer.innerHTML += text.charAt(typingIndex);
-      typingIndex++;
+    if (typingIndex < typingText.length) {
+      typingContainer.innerHTML += typingText.charAt(typingIndex);
+      typingIndex += 1;
       setTimeout(typeNext, 70);
-    } else {
-      document.getElementById("quiz").style.display = "block";
     }
   }
 
   typeNext();
 }
 
-document.body.addEventListener("click", typingEffect, { once: true });
+function updateElapsedTime() {
+  const now = new Date();
+  if (now < baseDate) return;
 
-// 🕵️ Quiz sederhana
-function checkAnswer() {
-  const ans = document.getElementById("answer").value.toLowerCase();
-  if (ans.includes("kue") || ans.includes("cake")) {
-    const quiz = document.getElementById("quiz");
-    quiz.style.display = "none";
-    const celebration = document.getElementById("celebration");
-    celebration.style.display = "flex";
-    const secretMessage = document.getElementById("secretMessage");
-    secretMessage.style.display = "block";
-    triggerLaunchSequence();
-    setTimeout(updateSlidePosition, 20);
-  } else {
-    alert("Hehe coba lagi, pikirkan ulang 🎂");
+  let years = now.getFullYear() - baseDate.getFullYear();
+  let months = now.getMonth() - baseDate.getMonth();
+  let days = now.getDate() - baseDate.getDate();
+
+  if (days < 0) {
+    months -= 1;
+    const prevMonthLength = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+    days += prevMonthLength;
   }
-}
 
-// 🚀 Peluncuran roket perayaan
-function triggerLaunchSequence() {
-  for (let i = 0; i < 16; i++) {
-    const rocket = document.createElement("div");
-    rocket.classList.add("balloon");
-    rocket.textContent = "🚀";
-    rocket.style.left = Math.random() * 100 + "vw";
-    rocket.style.animationDuration = 4 + Math.random() * 3 + "s";
-    document.body.appendChild(rocket);
-    setTimeout(() => rocket.remove(), 7000);
+  if (months < 0) {
+    years -= 1;
+    months += 12;
   }
+
+  const anchor = new Date(baseDate);
+  anchor.setFullYear(baseDate.getFullYear() + years);
+  anchor.setMonth(baseDate.getMonth() + months);
+  anchor.setDate(baseDate.getDate() + days);
+
+  let diffMs = now - anchor;
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  diffMs -= hours * 60 * 60 * 1000;
+  const minutes = Math.floor(diffMs / (1000 * 60));
+  diffMs -= minutes * 60 * 1000;
+  const seconds = Math.floor(diffMs / 1000);
+
+  const map = {
+    years,
+    months,
+    days,
+    hours,
+    minutes,
+    seconds
+  };
+
+  Object.entries(map).forEach(([key, value]) => {
+    const target = document.getElementById(key);
+    if (target) {
+      target.textContent = value.toLocaleString("id-ID");
+    }
+  });
 }
 
-// 🎞️ Slider foto
-const slidesWindow = document.querySelector(".slides-window");
-const slidesContainer = document.querySelector(".slides");
-const slides = document.querySelectorAll(".slide");
-const prevButton = document.querySelector(".slider-nav.prev");
-const nextButton = document.querySelector(".slider-nav.next");
-let currentSlide = 0;
+function initSlider() {
+  const slidesWindow = document.querySelector(".slides-window");
+  const slidesContainer = document.querySelector(".slides");
+  const slides = document.querySelectorAll(".slide");
+  const prevButton = document.querySelector(".slider-nav.prev");
+  const nextButton = document.querySelector(".slider-nav.next");
+  let currentSlide = 0;
 
-function updateSlidePosition() {
-  if (!slidesContainer || !slides.length) return;
-  const slideWidth = slidesWindow?.getBoundingClientRect().width || 0;
-  slidesContainer.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
-}
+  function updateSlidePosition() {
+    if (!slidesContainer || !slidesWindow) return;
+    const slideWidth = slidesWindow.getBoundingClientRect().width;
+    slidesContainer.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+  }
 
-function goToSlide(index) {
-  if (!slides.length) return;
-  currentSlide = (index + slides.length) % slides.length;
+  function goToSlide(index) {
+    if (!slides.length) return;
+    currentSlide = (index + slides.length) % slides.length;
+    updateSlidePosition();
+  }
+
+  prevButton?.addEventListener("click", () => goToSlide(currentSlide - 1));
+  nextButton?.addEventListener("click", () => goToSlide(currentSlide + 1));
+  window.addEventListener("resize", updateSlidePosition);
   updateSlidePosition();
 }
 
-prevButton?.addEventListener("click", () => goToSlide(currentSlide - 1));
-nextButton?.addEventListener("click", () => goToSlide(currentSlide + 1));
-window.addEventListener("resize", updateSlidePosition);
-
-// ✨ Sparkle mengikuti kursor
 function createSparkle(x, y) {
   const sparkle = document.createElement("span");
   sparkle.className = "sparkle";
@@ -87,12 +100,79 @@ function createSparkle(x, y) {
   setTimeout(() => sparkle.remove(), 600);
 }
 
-document.addEventListener("mousemove", (event) => {
-  if (!typingStarted) return;
-  createSparkle(event.clientX, event.clientY);
-});
+function handlePointerTrail() {
+  document.addEventListener("mousemove", (event) => {
+    createSparkle(event.clientX, event.clientY);
+  });
+}
 
-// 🎆 Fireworks
+function createBurst(x, y, color) {
+  const burst = document.createElement("div");
+  burst.className = "burst";
+  burst.style.left = `${x}px`;
+  burst.style.top = `${y}px`;
+
+  const particles = 8;
+  for (let i = 0; i < particles; i += 1) {
+    const shard = document.createElement("span");
+    const angle = (360 / particles) * i;
+    shard.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+    shard.style.background = color;
+    burst.appendChild(shard);
+  }
+
+  document.body.appendChild(burst);
+  setTimeout(() => burst.remove(), 450);
+}
+
+function spawnBalloon() {
+  const balloon = document.createElement("div");
+  balloon.className = "balloon";
+
+  const hue = Math.floor(Math.random() * 360);
+  const size = 70 + Math.random() * 50;
+  const duration = 12 + Math.random() * 8;
+  const leftPosition = Math.random() * 100;
+
+  balloon.style.width = `${size}px`;
+  balloon.style.height = `${size * 1.35}px`;
+  balloon.style.left = `calc(${leftPosition}vw)`;
+  balloon.style.animationDuration = `${duration}s`;
+  balloon.style.background = `radial-gradient(circle at 30% 25%, rgba(255,255,255,0.7), hsla(${hue}, 90%, 65%, 0.95) 55%, hsla(${hue}, 90%, 55%, 0.95) 100%)`;
+
+  document.body.appendChild(balloon);
+
+  const removeTimeout = setTimeout(() => {
+    balloon.remove();
+  }, (duration + 2) * 1000);
+
+  balloon.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const rect = balloon.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    createBurst(x, y, `hsla(${hue}, 95%, 70%, 1)`);
+    balloon.classList.add("popped");
+    clearTimeout(removeTimeout);
+    setTimeout(() => balloon.remove(), 320);
+  });
+}
+
+function startBalloons() {
+  const minInterval = 1600;
+  const maxInterval = 3200;
+
+  function scheduleNext() {
+    const delay = Math.random() * (maxInterval - minInterval) + minInterval;
+    setTimeout(() => {
+      spawnBalloon();
+      scheduleNext();
+    }, delay);
+  }
+
+  scheduleNext();
+}
+
 const canvas = document.getElementById("confetti");
 const ctx = canvas.getContext("2d");
 let confettiPieces = [];
@@ -103,9 +183,6 @@ function setupCanvas() {
   canvas.height = window.innerHeight;
 }
 
-setupCanvas();
-window.addEventListener("resize", setupCanvas);
-
 function createConfetti() {
   confettiPieces = Array.from({ length: 90 }, () => ({
     x: Math.random() * canvas.width,
@@ -115,8 +192,6 @@ function createConfetti() {
     color: `hsl(${Math.random() * 360}, 90%, 60%)`
   }));
 }
-
-createConfetti();
 
 function drawConfetti() {
   confettiPieces.forEach((piece) => {
@@ -152,7 +227,8 @@ function createFirework(x, y) {
 }
 
 document.addEventListener("click", (event) => {
-  if (event.target.closest(".quiz-card, .slider-nav, input, button")) return;
+  if (event.target.closest("button, .slider-nav, .slides-window, .photo-placeholder")) return;
+  if (event.target.classList.contains("balloon")) return;
   createFirework(event.clientX, event.clientY);
 });
 
@@ -189,4 +265,19 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
-animate();
+window.addEventListener("resize", () => {
+  setupCanvas();
+  createConfetti();
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  typingEffect();
+  updateElapsedTime();
+  setInterval(updateElapsedTime, 1000);
+  initSlider();
+  handlePointerTrail();
+  startBalloons();
+  setupCanvas();
+  createConfetti();
+  animate();
+});
