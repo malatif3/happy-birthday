@@ -234,24 +234,25 @@ function initAimFollowers() {
   const toDeg = 180 / Math.PI;
   const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
-  function updateAim(model, x, y) {
-    if (!model) return;
-    const rect = model.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = x - cx;
-    const dy = y - cy;
+  const updateAim = (el, x, y) => {
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
 
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
+    // Hitung jarak kursor dari tengah layar
+    const dx = (x - cx) / cx;
+    const dy = (y - cy) / cy;
 
-    // hitung rotasi relatif berdasarkan posisi pointer
-    const yaw = clamp((dx / vw) * 120, -60, 60);      // kanan-kiri
-    const pitch = clamp((-dy / vh) * 90, -45, 45);    // atas-bawah
-    const roll = clamp((dx / vw) * 20, -10, 10);      // miring sedikit
+    // Batasi sudut rotasi
+    const maxYaw = 18;   // kiri-kanan
+    const maxPitch = 12; // atas-bawah
 
-    // apply langsung ke model
-    model.orientation = `${pitch.toFixed(2)}deg ${yaw.toFixed(2)}deg ${roll.toFixed(2)}deg`;
+    const yaw = Math.max(-maxYaw, Math.min(maxYaw, dx * maxYaw));
+    const pitch = Math.max(-maxPitch, Math.min(maxPitch, -dy * maxPitch));
+
+    // Terapkan rotasi
+    el.style.transform = `rotateX(${pitch}deg) rotateY(${yaw}deg)`;
   }
 
   document.addEventListener("pointermove", (e) => {
