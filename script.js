@@ -106,33 +106,42 @@ function updateElapsed() {
 function initSlider() {
   const slides = Array.from(document.querySelectorAll(".slide"));
   if (!slides.length) return;
-  const prevButton = document.querySelector(".slider-nav.prev");
+
+  const prevButton = document.querySelector(".slider-control--prev");
   const nextButton = document.querySelector(".slider-control--next");
   let current = 0;
 
   const arrange = () => {
     const container = document.querySelector(".slides-window");
-    const cw = container ? container.getBoundingClientRect().width : window.innerWidth;
-    const shift = Math.min(cw / 2.2, 240);
-    slides.forEach((slide, i) => {
-      let offset = i - current;
-      const half = slides.length / 2;
+    const containerWidth = container ? container.getBoundingClientRect().width : window.innerWidth;
+    const baseShift = Math.min(containerWidth / 2.2, 240);
+
+    slides.forEach((slide, index) => {
+      let offset = index - current;
+      const half = Math.floor(slides.length / 2);
       if (offset > half) offset -= slides.length;
       if (offset < -half) offset += slides.length;
       const abs = Math.abs(offset);
-      const tx = offset * shift;
-      const ry = offset * -8;
+      const translateX = offset * baseShift;
+      const rotateY = offset * -8;
       const scale = Math.max(0.65, 1 - abs * 0.18);
-      const op = abs > 2 ? 0 : Math.max(0.35, 1 - abs * 0.25);
-      slide.style.transform = `translate(-50%, -50%) translateX(${tx}px) rotateY(${ry}deg) scale(${scale})`;
-      slide.style.zIndex = slides.length - abs;
-      slide.style.opacity = op;
+      const depthOpacity = abs > 2 ? 0 : Math.max(0.35, 1 - abs * 0.25);
+
+      slide.style.transform = `translate(-50%, -50%) translateX(${translateX}px) rotateY(${rotateY}deg) scale(${scale})`;
+      slide.style.zIndex = String(slides.length - abs);
+      slide.style.opacity = depthOpacity.toString();
       slide.classList.toggle("is-active", offset === 0);
     });
   };
-  const go = (i) => { current = (i + slides.length) % slides.length; arrange(); };
-  prevButton?.addEventListener("click", () => go(current - 1));
-  nextButton?.addEventListener("click", () => go(current + 1));
+
+  const goTo = (index) => {
+    current = (index + slides.length) % slides.length;
+    arrange();
+  };
+
+  prevButton?.addEventListener("click", () => goTo(current - 1));
+  nextButton?.addEventListener("click", () => goTo(current + 1));
+
   window.addEventListener("resize", arrange);
   arrange();
 }
