@@ -222,47 +222,58 @@ function initReveal() {
 // =========================
 //  AIM FOLLOWERS (3D GADGETS + CROSSHAIR)
 // =========================
-function updateAim(wrapper, x, y) {
-  if (!wrapper) return;
-  const rect = wrapper.getBoundingClientRect();
-  const cx = rect.left + rect.width / 2;
-  const cy = rect.top + rect.height / 2;
+// =========================
+//  AIM FOLLOWERS (3D GADGETS + CROSSHAIR)
+// =========================
+function initAimFollowers() {
+  const target = document.getElementById("targetCursor");
+  const pistolWrapper = document.querySelector(".gadget--pistol");
+  const flashlightWrapper = document.querySelector(".gadget--flashlight");
+  const pistol = pistolWrapper?.querySelector("model-viewer");
+  const flashlight = flashlightWrapper?.querySelector("model-viewer");
 
-  // selisih posisi kursor dari tengah objek
-  const dx = x - cx;
-  const dy = y - cy;
+  if (!target || !pistolWrapper || !flashlightWrapper) return;
 
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
+  const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
-  // hitung sudut relatif dari posisi kursor
-  // yaw → gerak kanan/kiri (rotasi Y)
-  // pitch → gerak atas/bawah (rotasi X)
-  const yaw = (dx / vw) * 60;      // kanan positif
-  const pitch = (dy / vh) * 40;    // bawah positif
+  function updateAim(wrapper, x, y) {
+    if (!wrapper) return;
+    const rect = wrapper.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
 
-  // batasi biar gak ekstrem
-  const yawClamped = clamp(yaw, -35, 35);
-  const pitchClamped = clamp(pitch, -20, 20);
+    const dx = x - cx;
+    const dy = y - cy;
 
-  // terapkan rotasi ke wrapper, bukan ke model-viewer
-  wrapper.style.transform = `
-    rotateY(${yawClamped.toFixed(2)}deg)
-    rotateX(${-pitchClamped.toFixed(2)}deg)
-  `;
-}
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    // Hitung sudut - ini yang harus diperbaiki
+    const yaw = (dx / vw) * 60;
+    const pitch = (dy / vh) * 40;
+
+    const yawClamped = clamp(yaw, -35, 35);
+    const pitchClamped = clamp(pitch, -20, 20);
+
+    // Terapkan rotasi ke wrapper
+    wrapper.style.transform = `
+      rotateY(${yawClamped.toFixed(2)}deg)
+      rotateX(${-pitchClamped.toFixed(2)}deg)
+    `;
+  }
 
   document.addEventListener("pointermove", (e) => {
     const { clientX, clientY } = e;
     target.style.setProperty("--cursor-x", `${clientX}px`);
     target.style.setProperty("--cursor-y", `${clientY}px`);
-    updateAim(pistol, clientX, clientY);
-    updateAim(flashlight, clientX, clientY);
+    updateAim(pistolWrapper, clientX, clientY);
+    updateAim(flashlightWrapper, clientX, clientY);
   });
 
   document.addEventListener("pointerenter", () => {
     document.body.classList.add("is-aiming");
   });
+  
   document.addEventListener("pointerleave", () => {
     document.body.classList.remove("is-aiming");
   });
