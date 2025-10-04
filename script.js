@@ -235,24 +235,28 @@ function initAimFollowers() {
   const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
   function updateAim(model, x, y) {
-    if (!model) return;
-    const rect = model.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = x - cx;
-    const dy = y - cy;
+  if (!model) return;
+  const rect = model.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const dx = x - cx;
+  const dy = y - cy;
 
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
 
-    // hitung rotasi relatif berdasarkan posisi pointer
-    const yaw = clamp((dx / vw) * 120, -60, 60);      // kanan-kiri
-    const pitch = clamp((-dy / vh) * 90, -45, 45);    // atas-bawah
-    const roll = clamp((dx / vw) * 20, -10, 10);      // miring sedikit
+  // sudut relatif berdasarkan posisi pointer
+  const yaw = ((dx / vw) * 120);   // kiri–kanan (Y axis)
+  const pitch = ((dy / vh) * 90);  // atas–bawah (X axis)
 
-    // apply langsung ke model
-    model.orientation = `${pitch.toFixed(2)}deg ${yaw.toFixed(2)}deg ${roll.toFixed(2)}deg`;
-  }
+  // batasi biar gak ekstrim
+  const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+  const yawClamped = clamp(yaw, -60, 60);
+  const pitchClamped = clamp(pitch, -30, 30);
+
+  // Model-viewer pakai urutan X Y Z (pitch yaw roll)
+  model.orientation = `${-pitchClamped.toFixed(2)}deg ${yawClamped.toFixed(2)}deg 0deg`;
+}
 
   document.addEventListener("pointermove", (e) => {
     const { clientX, clientY } = e;
