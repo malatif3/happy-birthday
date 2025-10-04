@@ -267,27 +267,34 @@ function initAimFollowers() {
   const toDegrees = 180 / Math.PI;
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
+  const toDegrees = 180 / Math.PI;
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
   const updateAim = (element, pointerX, pointerY) => {
     if (!element) return;
     const pivot = element.querySelector(".gadget__pivot");
     const rect = (pivot ?? element).getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height * 0.65;
+    const angle = Math.atan2(pointerY - centerY, pointerX - centerX);
+    element.style.setProperty("--aim-angle", `${angle}rad`);
     const centerY = rect.top + rect.height / 2;
+
     const dx = pointerX - centerX;
     const dy = pointerY - centerY;
-    const vw = window.innerWidth || rect.width;
-    const vh = window.innerHeight || rect.height;
+    const viewportWidth = window.innerWidth || rect.width;
+    const viewportHeight = window.innerHeight || rect.height;
 
-    const yaw = clamp(Math.atan2(dx, vw * 0.38) * toDegrees, -55, 55);
-    const pitch = clamp(Math.atan2(-dy, vh * 0.42) * toDegrees, -38, 42);
-    const roll = clamp(Math.atan2(dx, vw * 0.85) * toDegrees * 0.6, -18, 18);
+    const yaw = clamp(Math.atan2(dx, viewportWidth * 0.38) * toDegrees, -55, 55);
+    const pitch = clamp(Math.atan2(-dy, viewportHeight * 0.42) * toDegrees, -38, 42);
+    const roll = clamp(Math.atan2(dx, viewportWidth * 0.85) * toDegrees * 0.6, -18, 18);
 
     element.style.setProperty("--aim-yaw", `${yaw.toFixed(2)}deg`);
     element.style.setProperty("--aim-pitch", `${pitch.toFixed(2)}deg`);
     element.style.setProperty("--aim-roll", `${roll.toFixed(2)}deg`);
 
     if (pivot) {
-      const intensity = Math.min(Math.hypot(dx, dy) / Math.hypot(vw, vh), 1);
+      const intensity = Math.min(Math.hypot(dx, dy) / Math.hypot(viewportWidth, viewportHeight), 1);
       pivot.style.setProperty("--aim-depth", intensity.toFixed(3));
     }
   };
@@ -298,7 +305,8 @@ function initAimFollowers() {
       element.style.setProperty("--aim-yaw", "0deg");
       element.style.setProperty("--aim-pitch", "0deg");
       element.style.setProperty("--aim-roll", "0deg");
-      element.querySelector(".gadget__pivot")?.style.setProperty("--aim-depth", "0");
+      const pivot = element.querySelector(".gadget__pivot");
+      pivot?.style.setProperty("--aim-depth", "0");
     });
   };
 
@@ -322,7 +330,6 @@ function initAimFollowers() {
   document.addEventListener("pointermove", handlePointerMove);
   document.addEventListener("pointerleave", () => {
     document.body.classList.remove("is-aiming");
-    target?.classList.add("is-hidden");
     resetAim();
   });
   document.addEventListener("pointerenter", () => {
