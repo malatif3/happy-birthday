@@ -233,8 +233,8 @@ p {
 ========================= */
 .photo-section {
   display: grid;
-  gap: 1.6rem;
-  margin-bottom: 4rem;
+  gap: 0rem;
+  margin-bottom: 0rem;
 }
 
 .photo-section__intro {
@@ -332,6 +332,13 @@ p {
   backdrop-filter: blur(12px);
   border-radius: 0 0 20px 20px;
   user-select: none;
+}
+
+:root[data-theme="light"] .slide figcaption {
+  background: rgba(255, 255, 255, 0.88); /* lembut & transparan */
+  color: #1f2545; /* teks jadi gelap, kontras tinggi */
+  box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.08) inset; /* efek halus */
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .slider-control {
@@ -640,6 +647,10 @@ body.is-aiming .target {
   animation: burstMove 0.5s ease-out forwards;
 }
 
+.closing-note {
+  margin-bottom: 100px;
+}
+
 @keyframes burstMove {
   from { transform: scale(0.5) translate(0, 0); opacity: 1; }
   to { transform: scale(1) translate(60px, 0); opacity: 0; }
@@ -691,5 +702,4 @@ body.is-aiming .target {
   body { cursor: default; }
   .target { display: none; }
   .time-grid { grid-template-columns: repeat(2, 1fr); }
-  .gadget { display: none; }
-}
+  }
