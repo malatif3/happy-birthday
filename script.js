@@ -2,6 +2,7 @@ const INTRO_TEXT = "Setiap misi sudah kamu jalani—malam ini kita rayakan semua
 const BIRTH_ISO = "1974-10-04T00:00:00-07:00";
 const TIME_ZONE = "America/Los_Angeles";
 const NUMBER_FORMAT = new Intl.NumberFormat("en-US");
+
 const ZONE_PARTS_FORMAT = new Intl.DateTimeFormat("sv-SE", {
   timeZone: TIME_ZONE,
   year: "numeric",
@@ -12,6 +13,7 @@ const ZONE_PARTS_FORMAT = new Intl.DateTimeFormat("sv-SE", {
   second: "2-digit",
   hour12: false
 });
+
 const BIRTH_FORMAT = new Intl.DateTimeFormat("id-ID", {
   timeZone: TIME_ZONE,
   year: "numeric",
@@ -24,17 +26,16 @@ const BIRTH_FORMAT = new Intl.DateTimeFormat("id-ID", {
 });
 
 const birthParts = { year: 1974, month: 10, day: 4, hour: 0, minute: 0, second: 0 };
-const birthUTC = new Date(BIRTH_ISO).getTime();
 
 function typeIntro() {
   const target = document.getElementById("typing");
   if (!target) return;
   target.textContent = "";
-  let index = 0;
+  let i = 0;
   const step = () => {
-    if (index >= INTRO_TEXT.length) return;
-    target.textContent += INTRO_TEXT.charAt(index);
-    index += 1;
+    if (i >= INTRO_TEXT.length) return;
+    target.textContent += INTRO_TEXT.charAt(i);
+    i++;
     setTimeout(step, 70);
   };
   step();
@@ -44,21 +45,20 @@ function getZoneParts(date = new Date()) {
   const formatted = ZONE_PARTS_FORMAT.format(date);
   const [datePart, timePart] = formatted.split(/\s+/);
   if (!timePart) return {};
-  const [year, month, day] = datePart.split("-").map(Number);
-  const [hour, minute, second] = timePart.split(":").map(Number);
-  return { year, month, day, hour, minute, second };
+  const [y, m, d] = datePart.split("-").map(Number);
+  const [h, min, s] = timePart.split(":").map(Number);
+  return { year: y, month: m, day: d, hour: h, minute: min, second: s };
 }
 
 function updateBirthDisplay() {
-  const el = document.getElementById("baseDateDisplay");
+  const el = document.getElementById("birthTime");
   if (!el) return;
-  const formatted = BIRTH_FORMAT.format(new Date(BIRTH_ISO));
-  el.textContent = formatted;
+  el.textContent = BIRTH_FORMAT.format(new Date(BIRTH_ISO));
   el.setAttribute("datetime", BIRTH_ISO);
 }
 
 function updateZoneClock() {
-  const clock = document.getElementById("timezoneClock");
+  const clock = document.getElementById("zoneClock");
   if (!clock) return;
   const parts = getZoneParts();
   const pad = (v) => String(v).padStart(2, "0");
@@ -66,20 +66,20 @@ function updateZoneClock() {
 }
 
 function updateElapsed() {
-  const parts = getZoneParts();
-  if (!parts.year) return;
+  const p = getZoneParts();
+  if (!p.year) return;
 
-  let years = parts.year - birthParts.year;
-  let months = parts.month - birthParts.month;
-  let days = parts.day - birthParts.day;
+  let years = p.year - birthParts.year;
+  let months = p.month - birthParts.month;
+  let days = p.day - birthParts.day;
 
   if (days < 0) {
-    months -= 1;
-    const prevDays = new Date(parts.year, parts.month - 1, 0).getDate();
+    months--;
+    const prevDays = new Date(p.year, p.month - 1, 0).getDate();
     days += prevDays;
   }
   if (months < 0) {
-    years -= 1;
+    years--;
     months += 12;
   }
 
@@ -88,7 +88,7 @@ function updateElapsed() {
   anchor.setUTCMonth(anchor.getUTCMonth() + months);
   anchor.setUTCDate(anchor.getUTCDate() + days);
 
-  const now = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second);
+  const now = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
   let diff = Math.max(0, now - anchor.getTime());
   const hours = Math.floor(diff / (1000 * 60 * 60));
   diff -= hours * 60 * 60 * 1000;
@@ -97,27 +97,29 @@ function updateElapsed() {
   const seconds = Math.floor(diff / 1000);
 
   const values = { years, months, days, hours, minutes, seconds };
-  Object.entries(values).forEach(([key, val]) => {
+  for (const [key, val] of Object.entries(values)) {
     const el = document.getElementById(key);
     if (el) el.textContent = NUMBER_FORMAT.format(val);
-  });
+  }
 }
 
 function initSlider() {
-  const slides = Array.from(document.querySelectorAll(".slide"));
+  const slides = [...document.querySelectorAll(".slide")];
   if (!slides.length) return;
 
-  const prevButton = document.querySelector(".slider-control--prev");
-  const nextButton = document.querySelector(".slider-control--next");
-  let current = 0;
+  const prevButton =
+    document.querySelector(".slider-control--prev") || document.querySelector(".slider-nav.prev");
+  const nextButton =
+    document.querySelector(".slider-control--next") || document.querySelector(".slider-nav.next");
 
+  let current = 0;
   const arrange = () => {
     const container = document.querySelector(".slides-window");
     const containerWidth = container ? container.getBoundingClientRect().width : window.innerWidth;
     const baseShift = Math.min(containerWidth / 2.2, 240);
 
-    slides.forEach((slide, index) => {
-      let offset = index - current;
+    slides.forEach((slide, i) => {
+      let offset = i - current;
       const half = Math.floor(slides.length / 2);
       if (offset > half) offset -= slides.length;
       if (offset < -half) offset += slides.length;
@@ -128,8 +130,8 @@ function initSlider() {
       const depthOpacity = abs > 2 ? 0 : Math.max(0.35, 1 - abs * 0.25);
 
       slide.style.transform = `translate(-50%, -50%) translateX(${translateX}px) rotateY(${rotateY}deg) scale(${scale})`;
-      slide.style.zIndex = String(slides.length - abs);
-      slide.style.opacity = depthOpacity.toString();
+      slide.style.zIndex = slides.length - abs;
+      slide.style.opacity = depthOpacity;
       slide.classList.toggle("is-active", offset === 0);
     });
   };
@@ -155,12 +157,12 @@ function createSparkle(x, y) {
   setTimeout(() => s.remove(), 600);
 }
 function initSparkles() {
-  let last = 0;
+  let sparkleRaf;
   document.addEventListener("pointermove", (e) => {
-    const now = performance.now();
-    if (now - last < 120) return;
-    if (Math.random() < 0.6) createSparkle(e.clientX, e.clientY);
-    last = now;
+    cancelAnimationFrame(sparkleRaf);
+    sparkleRaf = requestAnimationFrame(() => {
+      if (Math.random() < 0.5) createSparkle(e.clientX, e.clientY);
+    });
   });
 }
 
@@ -216,69 +218,9 @@ function initAimFollowers() {
     updateAim(flashlight, e.clientX, e.clientY);
     document.body.classList.add("is-aiming");
   });
+
+  document.addEventListener("pointerenter", () => document.body.classList.add("is-aiming"));
   document.addEventListener("pointerleave", () => document.body.classList.remove("is-aiming"));
-}
-
-function createBurst(x, y, color) {
-  const b = document.createElement("div");
-  b.className = "burst";
-  b.style.left = `${x}px`;
-  b.style.top = `${y}px`;
-  for (let i = 0; i < 8; i++) {
-    const shard = document.createElement("span");
-    shard.style.transform = `translate(-50%, -50%) rotate(${(360 / 8) * i}deg)`;
-    shard.style.background = color;
-    b.appendChild(shard);
-  }
-  document.body.appendChild(b);
-  setTimeout(() => b.remove(), 450);
-}
-
-function spawnBalloon() {
-  const el = document.createElement("div");
-  el.className = "balloon";
-  const hue = Math.floor(Math.random() * 360);
-  const size = 70 + Math.random() * 50;
-  el.style.width = `${size}px`;
-  el.style.height = `${size * 1.35}px`;
-  el.style.left = `${Math.random() * 100}vw`;
-  el.style.animationDuration = `${12 + Math.random() * 8}s`;
-  el.style.background = `radial-gradient(circle at 30% 25%, rgba(255,255,255,0.7), hsla(${hue}, 90%, 65%, 0.95) 55%, hsla(${hue}, 90%, 55%, 0.95))`;
-  document.body.appendChild(el);
-  const remove = setTimeout(() => el.remove(), 16000);
-  el.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const rect = el.getBoundingClientRect();
-    createBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, `hsla(${hue},95%,70%,1)`);
-    el.classList.add("popped");
-    clearTimeout(remove);
-    setTimeout(() => el.remove(), 300);
-  });
-}
-function initBalloons() {
-  const loop = () => {
-    spawnBalloon();
-    setTimeout(loop, 1500 + Math.random() * 1800);
-  };
-  loop();
-}
-
-function initThemeToggle() {
-  const btn = document.querySelector("[data-theme-toggle]");
-  if (!btn) return;
-  const root = document.documentElement;
-  const icon = btn.querySelector(".theme-toggle__icon");
-  const label = btn.querySelector(".theme-toggle__label");
-  const key = "hb-theme";
-  const apply = (t) => {
-    const mode = t === "light" ? "light" : "dark";
-    root.dataset.theme = mode;
-    localStorage.setItem(key, mode);
-    if (icon) icon.textContent = mode === "light" ? "☀️" : "🌙";
-    if (label) label.textContent = mode === "light" ? "Light" : "Dark";
-  };
-  apply(localStorage.getItem(key) || "dark");
-  btn.addEventListener("click", () => apply(root.dataset.theme === "dark" ? "light" : "dark"));
 }
 
 function initFireworks(canvas, ctx, confetti, fireworks) {
@@ -328,7 +270,7 @@ function initFireworks(canvas, ctx, confetti, fireworks) {
     makeConfetti();
   });
   document.addEventListener("click", (e) => {
-    if (e.target.closest("button,.slide,.slider-control,.note__paper,.balloon")) return;
+    if (e.target.closest("button,.slide,.slider-control,.paper-note__sheet,.balloon")) return;
     for (let i = 0; i < 30; i++)
       fireworks.push({
         x: e.clientX,
@@ -353,8 +295,8 @@ window.addEventListener("DOMContentLoaded", () => {
   initSparkles();
   initReveal();
   initAimFollowers();
-  initThemeToggle();
   initBalloons();
+  initThemeToggle();
   const canvas = document.getElementById("confetti");
   const ctx = canvas?.getContext("2d");
   if (canvas && ctx) initFireworks(canvas, ctx, [], []);
