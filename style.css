@@ -198,13 +198,12 @@ body {
 
 .slide__image {
   width: 100%;
-  height: auto; /* biar proporsional */
-  max-height: 400px; /* batas agar tidak kepanjangan */
-  object-fit: cover;
-  border-radius: 16px;
+  aspect-ratio: 1 / 1; /* ✅ bikin jadi persegi */
+  object-fit: cover; /* biar tetap crop rapi, gak gepeng */
+  border-radius: 20px;
   display: block;
   margin: 0 auto;
-  aspect-ratio: 4 / 3; /* bisa ubah ke 3/4 jika fotonya portrait */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
 .slide.is-active {
