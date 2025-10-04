@@ -222,34 +222,34 @@ function initReveal() {
 // =========================
 //  AIM FOLLOWERS (3D GADGETS + CROSSHAIR)
 // =========================
-function initAimFollowers() {
-  const target = document.getElementById("targetCursor");
-  const pistolWrapper = document.querySelector(".gadget--pistol");
-  const flashlightWrapper = document.querySelector(".gadget--flashlight");
-  const pistol = pistolWrapper?.querySelector("model-viewer");
-  const flashlight = flashlightWrapper?.querySelector("model-viewer");
-
-  if (!target || !pistol || !flashlight) return;
-
-  const toDeg = 180 / Math.PI;
-  const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
-
-  function updateAim(model, x, y) {
-  if (!model) return;
-  const rect = model.getBoundingClientRect();
+function updateAim(wrapper, x, y) {
+  if (!wrapper) return;
+  const rect = wrapper.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
 
+  // selisih posisi kursor dari tengah objek
   const dx = x - cx;
   const dy = y - cy;
 
-  const yaw = Math.atan2(dx, 300) * toDeg;
-  const pitch = Math.atan2(-dy, 300) * toDeg;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
 
-  const yawClamped = clamp(yaw, -60, 60);
-  const pitchClamped = clamp(pitch, -30, 30);
+  // hitung sudut relatif dari posisi kursor
+  // yaw → gerak kanan/kiri (rotasi Y)
+  // pitch → gerak atas/bawah (rotasi X)
+  const yaw = (dx / vw) * 60;      // kanan positif
+  const pitch = (dy / vh) * 40;    // bawah positif
 
-  model.orientation = `${pitchClamped.toFixed(2)}deg ${yawClamped.toFixed(2)}deg 0deg`;
+  // batasi biar gak ekstrem
+  const yawClamped = clamp(yaw, -35, 35);
+  const pitchClamped = clamp(pitch, -20, 20);
+
+  // terapkan rotasi ke wrapper, bukan ke model-viewer
+  wrapper.style.transform = `
+    rotateY(${yawClamped.toFixed(2)}deg)
+    rotateX(${-pitchClamped.toFixed(2)}deg)
+  `;
 }
 
   document.addEventListener("pointermove", (e) => {
