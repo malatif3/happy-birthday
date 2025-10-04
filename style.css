@@ -312,14 +312,17 @@ body {
 ========================= */
 .gadget {
   position: fixed;
-  bottom: 4rem;
-  width: clamp(180px, 28vw, 380px);
-  height: clamp(140px, 22vw, 260px);
+  bottom: clamp(2.4rem, 6vw, 4.8rem);
+  width: clamp(220px, 32vw, 420px);
+  height: clamp(160px, 26vw, 320px);
   z-index: 8;
   transform-style: preserve-3d;
-  transform: rotateX(var(--aim-pitch)) rotateY(var(--aim-yaw)) rotateZ(var(--aim-roll));
-  transition: transform 0.24s cubic-bezier(0.22, 0.61, 0.36, 1);
+  /* Pastikan tidak dibalik ke arah user */
+  perspective: 800px;
+  transform-origin: center bottom;
+  transition: transform 0.25s ease-out;
 }
+
 
 .gadget--pistol { left: 3vw; }
 .gadget--flashlight { right: 3vw; }
