@@ -224,40 +224,50 @@ function initReveal() {
 // =========================
 function initAimFollowers() {
   const target = document.getElementById("targetCursor");
-  const pistol = document.querySelector(".gadget--pistol model-viewer");
-  const flashlight = document.querySelector(".gadget--flashlight model-viewer");
-  if (!target && !pistol && !flashlight) return;
+  const pistolWrapper = document.querySelector(".gadget--pistol");
+  const flashlightWrapper = document.querySelector(".gadget--flashlight");
+  const pistol = pistolWrapper?.querySelector("model-viewer");
+  const flashlight = flashlightWrapper?.querySelector("model-viewer");
+
+  if (!target || !pistol || !flashlight) return;
 
   const toDeg = 180 / Math.PI;
-  const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
+  const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
-  const updateAim = (model, x, y) => {
+  function updateAim(model, x, y) {
     if (!model) return;
     const rect = model.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
     const dx = x - cx;
     const dy = y - cy;
+
     const vw = window.innerWidth;
     const vh = window.innerHeight;
 
-    const yaw = clamp(Math.atan2(dx, vw * 0.4) * toDeg, -50, 50);
-    const pitch = clamp(Math.atan2(-dy, vh * 0.4) * toDeg, -35, 35);
+    // hitung rotasi relatif berdasarkan posisi pointer
+    const yaw = clamp((dx / vw) * 120, -60, 60);      // kanan-kiri
+    const pitch = clamp((-dy / vh) * 90, -45, 45);    // atas-bawah
+    const roll = clamp((dx / vw) * 20, -10, 10);      // miring sedikit
 
-    // ubah sudut kamera model-viewer berdasarkan posisi mouse
-    model.cameraOrbit = `${yaw.toFixed(1)}deg ${90 + pitch.toFixed(1)}deg 105%`;
-  };
+    // apply langsung ke model
+    model.orientation = `${pitch.toFixed(2)}deg ${yaw.toFixed(2)}deg ${roll.toFixed(2)}deg`;
+  }
 
   document.addEventListener("pointermove", (e) => {
     const { clientX, clientY } = e;
-    target?.style.setProperty("--cursor-x", `${clientX}px`);
-    target?.style.setProperty("--cursor-y", `${clientY}px`);
+    target.style.setProperty("--cursor-x", `${clientX}px`);
+    target.style.setProperty("--cursor-y", `${clientY}px`);
     updateAim(pistol, clientX, clientY);
     updateAim(flashlight, clientX, clientY);
   });
-}
 
-  document.addEventListener("pointerleave", () => document.body.classList.remove("is-aiming"));
+  document.addEventListener("pointerenter", () => {
+    document.body.classList.add("is-aiming");
+  });
+  document.addEventListener("pointerleave", () => {
+    document.body.classList.remove("is-aiming");
+  });
 }
 
 // =========================
