@@ -234,13 +234,13 @@ function initAimFollowers() {
   const toDeg = 180 / Math.PI;
   const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
-  function updateAim(model, x, y) {
-  if (!model) return;
-  const rect = model.getBoundingClientRect();
+  function updateAim(wrapper, x, y) {
+  if (!wrapper) return;
+  const rect = wrapper.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
 
-  // selisih posisi kursor dari tengah layar
+  // selisih posisi kursor dari tengah objek
   const dx = x - cx;
   const dy = y - cy;
 
@@ -248,19 +248,17 @@ function initAimFollowers() {
   const vh = window.innerHeight;
 
   // hitung sudut relatif dari posisi kursor
-  // yaw → gerak kanan/kiri
-  // pitch → gerak atas/bawah
-  const yaw = (dx / vw) * 90;      // kanan positif
-  const pitch = (dy / vh) * 60;    // bawah positif
+  // yaw → gerak kanan/kiri (rotasi Y)
+  // pitch → gerak atas/bawah (rotasi X)
+  const yaw = (dx / vw) * 60;      // kanan positif
+  const pitch = (dy / vh) * 40;    // bawah positif
 
   // batasi biar gak ekstrem
-  const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
-  const yawClamped = clamp(yaw, -45, 45);
-  const pitchClamped = clamp(pitch, -25, 25);
+  const yawClamped = clamp(yaw, -35, 35);
+  const pitchClamped = clamp(pitch, -20, 20);
 
-  // karena axis blender dan webgl beda, kita remap:
-  // orientation: rotate around Y (yaw), then X (pitch)
-  model.style.transform = `
+  // terapkan rotasi ke wrapper, bukan ke model-viewer
+  wrapper.style.transform = `
     rotateY(${yawClamped.toFixed(2)}deg)
     rotateX(${-pitchClamped.toFixed(2)}deg)
   `;
