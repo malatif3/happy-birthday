@@ -1,127 +1,164 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Happy Birthday my best man, Andy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Happy Birthday, Andy!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Handlee&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </head>
 <body>
-  <canvas id="confetti"></canvas>
-  <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false"
-    aria-label="Toggle light and dark mode">
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Toggle dark and light theme">
     <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
     <span class="theme-toggle__label">Dark</span>
   </button>
-  <div class="ballistic-wrapper">
-    <header data-reveal>
-      <h1>Happy Birthday my best man, Andy</h1>
-      <p id="typing" aria-live="polite"></p>
+
+  <main class="page" id="top">
+    <header class="hero" data-reveal>
+      <h1>Happy Birthday, Andy</h1>
+      <p class="hero__subtitle" id="typing" aria-live="polite"></p>
     </header>
 
-    <section class="time-card" aria-labelledby="timeHeading" data-reveal>
-      <div class="time-card__header">
-        <h2 id="timeHeading">Sudah selama ini kamu berpetualang di dunia</h2>
-        <p>Hitung mundur kisahmu dimulai dari hari pertama kamu hadir di bumi.</p>
-        <p class="time-card__timestamp">Sejak <time id="baseDateDisplay" datetime="1974-10-04T00:00:00-07:00">4 Oktober 1974 00:00:00</time> — California (GMT-7)</p>
-        <p class="timezone-clock" aria-live="polite">Waktu sekarang di California: <span id="timezoneClock">--:--:--</span></p>
-      </div>
-      <div class="time-grid" role="presentation">
-        <article class="time-unit" data-reveal>
-          <span class="time-number" id="years">0</span>
-          <span class="time-label">Years</span>
+    <section class="timeline" aria-labelledby="timelineHeading" data-reveal>
+      <header class="timeline__header">
+        <h2 id="timelineHeading">Sudah sejauh ini kamu berpetualang</h2>
+        <p>Hitung mundur ini dimulai ketika kamu pertama kali hadir di dunia.</p>
+        <p class="timeline__timestamp">Sejak <time id="birthTime" datetime="1974-10-04T00:00:00-07:00">4 Oktober 1974 00:00:00</time> — California (Pacific Time)</p>
+        <p class="timeline__clock" aria-live="polite">Waktu sekarang di California: <span id="zoneClock">--:--:--</span></p>
+      </header>
+      <div class="timeline__grid" role="presentation">
+        <article class="timeline__unit" data-reveal>
+          <span class="timeline__number" id="years">0</span>
+          <span class="timeline__label">Years</span>
         </article>
-        <article class="time-unit" data-reveal>
-          <span class="time-number" id="months">0</span>
-          <span class="time-label">Months</span>
+        <article class="timeline__unit" data-reveal>
+          <span class="timeline__number" id="months">0</span>
+          <span class="timeline__label">Months</span>
         </article>
-        <article class="time-unit" data-reveal>
-          <span class="time-number" id="days">0</span>
-          <span class="time-label">Days</span>
+        <article class="timeline__unit" data-reveal>
+          <span class="timeline__number" id="days">0</span>
+          <span class="timeline__label">Days</span>
         </article>
-        <article class="time-unit" data-reveal>
-          <span class="time-number" id="hours">0</span>
-          <span class="time-label">Hours</span>
+        <article class="timeline__unit" data-reveal>
+          <span class="timeline__number" id="hours">0</span>
+          <span class="timeline__label">Hours</span>
         </article>
-        <article class="time-unit" data-reveal>
-          <span class="time-number" id="minutes">0</span>
-          <span class="time-label">Minutes</span>
+        <article class="timeline__unit" data-reveal>
+          <span class="timeline__number" id="minutes">0</span>
+          <span class="timeline__label">Minutes</span>
         </article>
-        <article class="time-unit" data-reveal>
-          <span class="time-number" id="seconds">0</span>
-          <span class="time-label">Seconds</span>
+        <article class="timeline__unit" data-reveal>
+          <span class="timeline__number" id="seconds">0</span>
+          <span class="timeline__label">Seconds</span>
         </article>
       </div>
     </section>
 
     <section class="celebration" aria-live="polite" data-reveal>
-      <p class="celebration__message">🎉 Happy Birthday! May every dream you&apos;ve carefully kept come to life one by one.</p>
-      <p class="celebration__note">Keep scrolling—your story has so many more chapters waiting to be filled with photos and memories.</p>
+      <p class="celebration__line">🎉 Happy Birthday! Semoga setiap mimpi yang kamu simpan rapi satu per satu jadi nyata.</p>
+      <p class="celebration__line">Tetap lanjutkan perjalananmu—masih banyak cerita indah yang menunggu kita isi bersama.</p>
     </section>
 
-    <section class="photo-section" aria-labelledby="galleryHeading" data-reveal>
-      <div class="photo-section__intro">
-        <h2 id="galleryHeading">Memory Gallery (Placeholder)</h2>
-        <p>This is where the highlight reel will live. For now, swipe left or right to preview the placeholders.</p>
-      </div>
-      <div class="photo-slider" aria-label="Swipeable photo gallery">
-        <button class="slider-nav prev" aria-label="Previous photo" type="button" data-reveal>‹</button>
-        <div class="slides-window">
+    <section class="gallery" aria-labelledby="galleryHeading" data-reveal>
+      <header class="gallery__header">
+        <h2 id="galleryHeading">Memory Gallery</h2>
+        <p>Beberapa momen yang selalu mengingatkanku betapa beruntungnya aku memilikimu.</p>
+      </header>
+      <div class="gallery__slider" aria-label="Galeri foto geser">
+        <button class="slider-control slider-control--prev" type="button" aria-label="Foto sebelumnya">‹</button>
+        <div class="slider-window">
           <div class="slides">
             <figure class="slide" data-reveal>
-              <div class="photo-placeholder">The first snapshot will appear here.</div>
-              <figcaption>Start planning the story behind this standout moment.</figcaption>
+              <div class="slide__art" role="img" aria-label="Andy tersenyum memakai blazer biru di tepi pantai."
+                style="--photo: url('assets/photos/image_1.png');"></div>
+              <figcaption>Angin laut, senyum kamu, dan horizon yang selalu terasa lebih tenang saat ada kamu.</figcaption>
             </figure>
             <figure class="slide" data-reveal>
-              <div class="photo-placeholder">A space reserved for togetherness.</div>
-              <figcaption>Capture the warmth of being surrounded by your favorite people.</figcaption>
+              <div class="slide__art" role="img" aria-label="Andy tersenyum di lounge yang nyaman."
+                style="--photo: url('assets/photos/image_2.png');"></div>
+              <figcaption>Sela-sela waktu yang sunyi tempat dunia terasa melambat hanya untuk kita berdua.</figcaption>
             </figure>
             <figure class="slide" data-reveal>
-              <div class="photo-placeholder">Special memories coming soon.</div>
-              <figcaption>New adventures are already lining up for a place in this frame.</figcaption>
+              <div class="slide__art" role="img" aria-label="Andy dan pasangannya tersenyum di Candi Borobudur."
+                style="--photo: url('assets/photos/image_3.png');"></div>
+              <figcaption>Menjelajah Borobudur bersamamu serasa membuka bab baru dalam kisah kita.</figcaption>
             </figure>
             <figure class="slide" data-reveal>
-              <div class="photo-placeholder">Room reserved for a surprise.</div>
-              <figcaption>Maybe a secret photo from your closest crew?</figcaption>
+              <div class="slide__art" role="img" aria-label="Andy beristirahat di atas bantal dengan senyum lembut."
+                style="--photo: url('assets/photos/image_4.png');"></div>
+              <figcaption>Momen santai kamu selalu hangat—tempat favoritku untuk pulang.</figcaption>
+            </figure>
+            <figure class="slide" data-reveal>
+              <div class="slide__art" role="img" aria-label="Andy dan pasangannya tersenyum saat makan malam."
+                style="--photo: url('assets/photos/image_5.png');"></div>
+              <figcaption>Janji bahwa hari biasa pun jadi ajaib ketika kamu ada di sampingku.</figcaption>
+            </figure>
+            <figure class="slide" data-reveal>
+              <div class="slide__art" role="img" aria-label="Andy bekerja dengan tablet di samping papan Yakitori Night."
+                style="--photo: url('assets/photos/image_6.png');"></div>
+              <figcaption>Kamu selalu lihai menyeimbangkan fokus dan seru—selalu ada ide cemerlang.</figcaption>
+            </figure>
+            <figure class="slide" data-reveal>
+              <div class="slide__art" role="img" aria-label="Andy mengenakan topi lebar tersenyum di depan candi kuno."
+                style="--photo: url('assets/photos/image_7.png');"></div>
+              <figcaption>Semangat ceria kamu bikin setiap petualangan tetap terang walau jauh dari rumah.</figcaption>
             </figure>
           </div>
         </div>
-        <button class="slider-nav next" aria-label="Next photo" type="button" data-reveal>›</button>
+        <button class="slider-control slider-control--next" type="button" aria-label="Foto berikutnya">›</button>
       </div>
     </section>
 
-    <footer class="closing-note" data-reveal>
-      <p>Thank you for making every mile of this meaningful journey unforgettable. Let&apos;s keep the celebration going with bright smiles and an open heart.</p>
+    <section class="note" aria-labelledby="noteHeading" data-reveal>
+      <article class="note__paper">
+        <h2 id="noteHeading">Happy Birthday! 🥳</h2>
+        <p>Wishing you another beautiful year ahead 🎂✨</p>
+        <p>Thank you for everything you’ve done, and for always being there for me. Even though I’m still quite new in your life — it’s only been about three years since we met — you welcomed me with so much warmth.</p>
+        <p>I feel so happy and incredibly lucky to have met you and to have you in my life. I hope you’re always blessed with good health, success, and endless happiness in every step you take.</p>
+        <p>May our relationship continue to grow beautifully and remain strong, no matter what happens. 🤍</p>
+        <p class="note__signature">I love you. ❤</p>
+      </article>
+    </section>
+
+    <footer class="closing" data-reveal>
+      <p>Terima kasih sudah menjadikan setiap perjalanan terasa berarti. Mari rayakan lagi dengan senyum lebar dan hati yang lapang.</p>
     </footer>
+  </main>
+
+  <div class="tape" aria-hidden="true">
+    <span class="tape__strip tape__strip--one">POLICE CROSS LINE DO NOT CROSS</span>
+    <span class="tape__strip tape__strip--two">POLICE CROSS LINE DO NOT CROSS</span>
   </div>
 
-  <div class="crossline-tape" aria-hidden="true">
-    <span class="crossline crossline--one">POLICE CROSS LINE DO NOT CROSS</span>
-    <span class="crossline crossline--two">POLICE CROSS LINE DO NOT CROSS</span>
-  </div>
-
-  <div class="gadget pistol" aria-hidden="true">
+  <div class="gadget gadget--pistol" aria-hidden="true">
     <div class="gadget__pivot">
-      <model-viewer src="38_special_revolver.glb" alt="3D revolver model" camera-controls disable-zoom interaction-prompt="none"
-        ar-modes="webxr scene-viewer quick-look" shadow-intensity="1" exposure="1.05"></model-viewer>
+      <div class="gadget__float">
+        <model-viewer src="38_special_revolver.glb" alt="Model 3D revolver" disable-zoom camera-controls interaction-prompt="none"
+          ar-modes="webxr scene-viewer quick-look" exposure="1.05" shadow-intensity="1"></model-viewer>
+      </div>
     </div>
   </div>
 
-  <div class="gadget flashlight" aria-hidden="true">
+  <div class="gadget gadget--flashlight" aria-hidden="true">
     <div class="gadget__pivot">
-      <model-viewer src="flashlight (1).glb" alt="3D flashlight model" camera-controls disable-zoom interaction-prompt="none"
-        ar-modes="webxr scene-viewer quick-look" shadow-intensity="1" exposure="1.05"></model-viewer>
+      <div class="gadget__float">
+        <model-viewer src="flashlight (1).glb" alt="Model 3D flashlight" disable-zoom camera-controls interaction-prompt="none"
+          ar-modes="webxr scene-viewer quick-look" exposure="1.05" shadow-intensity="1"></model-viewer>
+      </div>
     </div>
   </div>
 
-  <div class="target-cursor" id="targetCursor" aria-hidden="true">
-    <span class="target-cursor__ring"></span>
-    <span class="target-cursor__cross target-cursor__cross--vertical"></span>
-    <span class="target-cursor__cross target-cursor__cross--horizontal"></span>
-    <span class="target-cursor__dot"></span>
+  <div class="target" id="targetCursor" aria-hidden="true">
+    <span class="target__ring"></span>
+    <span class="target__cross target__cross--vertical"></span>
+    <span class="target__cross target__cross--horizontal"></span>
+    <span class="target__dot"></span>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js" defer></script>
 </body>
 </html>
