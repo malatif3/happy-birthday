@@ -1,7 +1,7 @@
 // =========================
 //  CONFIG & CONSTANTS
 // =========================
-const INTRO_TEXT = "Setiap misi sudah kamu jalani—malam ini kita rayakan semua kemenanganmu.";
+const INTRO_TEXT = "Tonight isn’t about solving a case, it’s about celebrating the one who solved them all.";
 const BIRTH_ISO = "1974-10-04T00:00:00-07:00";
 const TIME_ZONE = "America/Los_Angeles";
 
@@ -49,7 +49,6 @@ function typeIntro() {
 
   step();
 }
-
 
 // =========================
 //  TIME & DATE FUNCTIONS
@@ -117,9 +116,11 @@ function updateElapsed() {
   });
 }
 
-
 // =========================
 //  SLIDER / GALLERY
+// =========================
+// =========================
+//  SLIDER / GALLERY (Clickable Side Slides)
 // =========================
 function initSlider() {
   const slides = Array.from(document.querySelectorAll(".slide"));
@@ -129,33 +130,41 @@ function initSlider() {
   const nextButton = document.querySelector(".slider-control--next");
   let current = 0;
 
+  // --- Atur posisi slide
   const arrange = () => {
     slides.forEach((slide, index) => {
-      // Hapus semua class dulu
       slide.classList.remove("is-active", "is-next", "is-prev");
-      
-      // Tentukan posisi
-      if (index === current) {
-        slide.classList.add("is-active");
-      } else if (index === (current + 1) % slides.length) {
-        slide.classList.add("is-next");
-      } else if (index === (current - 1 + slides.length) % slides.length) {
-        slide.classList.add("is-prev");
-      }
-      // Slide lainnya tidak dapat class apapun (otomatis hidden by CSS)
+
+      if (index === current) slide.classList.add("is-active");
+      else if (index === (current + 1) % slides.length) slide.classList.add("is-next");
+      else if (index === (current - 1 + slides.length) % slides.length) slide.classList.add("is-prev");
     });
   };
 
+  // --- Fungsi ganti slide
   const goTo = (index) => {
     current = (index + slides.length) % slides.length;
     arrange();
   };
 
+  // --- Tombol panah
   prevButton?.addEventListener("click", () => goTo(current - 1));
   nextButton?.addEventListener("click", () => goTo(current + 1));
 
-  window.addEventListener("resize", arrange);
-  arrange(); // Jalankan sekali saat load
+  // --- Klik foto samping kanan/kiri
+  slides.forEach((slide) => {
+    // biar bisa diklik walau klik di dalam img atau figcaption
+    slide.addEventListener("click", (e) => {
+      const target = e.currentTarget;
+      if (target.classList.contains("is-next")) goTo(current + 1);
+      else if (target.classList.contains("is-prev")) goTo(current - 1);
+    });
+
+    // hilangkan pointer-events: none di CSS
+    slide.style.pointerEvents = "auto";
+  });
+
+  arrange();
 }
 
 // =========================
@@ -164,12 +173,14 @@ function initSlider() {
 function createSparkle(x, y) {
   const s = document.createElement("span");
   s.className = "sparkle";
-  const size = 8 + Math.random() * 10;
+  const size = 6 + Math.random() * 8;
+  const hue = Math.floor(Math.random() * 360);
   Object.assign(s.style, {
     width: `${size}px`,
     height: `${size}px`,
     left: `${x}px`,
-    top: `${y}px`
+    top: `${y}px`,
+    background: `radial-gradient(circle, hsla(${hue}, 100%, 70%, 1) 0%, transparent 70%)`
   });
   document.body.appendChild(s);
   setTimeout(() => s.remove(), 600);
@@ -219,6 +230,7 @@ function initReveal() {
 // =========================
 function initAimFollowers() {
   const target = document.getElementById("targetCursor");
+  const flashlightEl = document.querySelector(".flashlight"); // 🔥 Tambahan baru
   const pistolWrapper = document.querySelector(".gadget--pistol");
   const flashlightWrapper = document.querySelector(".gadget--flashlight");
   const pistol = pistolWrapper?.querySelector("model-viewer");
@@ -239,11 +251,10 @@ function initAimFollowers() {
     const dx = x - cx;
     const dy = y - cy;
 
-    // Hitung sudut menggunakan atan2 untuk "look-at" effect
-    const yaw = Math.atan2(dx, 300) * toDeg;      // Horizontal (kanan/kiri)
-    const pitch = Math.atan2(-dy, 300) * toDeg;   // Vertikal (atas/bawah)
+    // Hitung rotasi kiri/kanan dan atas/bawah
+    const yaw = Math.atan2(dx, 300) * toDeg;      // horizontal
+    const pitch = Math.atan2(-dy, 300) * toDeg;   // vertikal
 
-    // Batasi rotasi
     const yawClamped = clamp(yaw, -60, 60);
     const pitchClamped = clamp(pitch, -30, 30);
 
@@ -251,12 +262,21 @@ function initAimFollowers() {
     model.orientation = `0deg ${pitchClamped.toFixed(2)}deg ${-yawClamped.toFixed(2)}deg`;
   }
 
-  document.addEventListener("pointermove", (e) => {
-    const { clientX, clientY } = e;
-    target.style.setProperty("--cursor-x", `${clientX}px`);
-    target.style.setProperty("--cursor-y", `${clientY}px`);
-    updateAim(pistol, clientX, clientY);
-    updateAim(flashlight, clientX, clientY);
+    document.addEventListener("pointermove", (e) => {
+    const x = e.clientX;
+    const y = e.clientY;
+
+    // update crosshair
+    target.style.setProperty("--cursor-x", `${x}px`);
+    target.style.setProperty("--cursor-y", `${y}px`);
+
+    // update flashlight posisi
+    flashlightEl?.style.setProperty("--cursor-x", `${x}px`);
+    flashlightEl?.style.setProperty("--cursor-y", `${y}px`);
+
+    // rotasi model
+    updateAim(pistol, x, y);
+    updateAim(flashlight, x, y);
   });
 
   document.addEventListener("pointerenter", () => {
@@ -271,18 +291,34 @@ function initAimFollowers() {
 //  BALLOONS + BURST
 // =========================
 function createBurst(x, y, color) {
+  // burst dasar (shard pecahan)
   const b = document.createElement("div");
   b.className = "burst";
   b.style.left = `${x}px`;
   b.style.top = `${y}px`;
-  for (let i = 0; i < 8; i++) {
+
+  for (let i = 0; i < 10; i++) {
     const shard = document.createElement("span");
-    shard.style.transform = `translate(-50%, -50%) rotate(${(360 / 8) * i}deg)`;
+    shard.style.transform = `translate(-50%, -50%) rotate(${(360 / 10) * i}deg)`;
     shard.style.background = color;
     b.appendChild(shard);
   }
   document.body.appendChild(b);
-  setTimeout(() => b.remove(), 450);
+  setTimeout(() => b.remove(), 500);
+
+  // ✨ sparkle tambahan
+  for (let i = 0; i < 8; i++) {
+    const sparkle = document.createElement("span");
+    sparkle.className = "sparkle";
+    const angle = Math.random() * 2 * Math.PI;
+    const radius = Math.random() * 40;
+    sparkle.style.left = `${x + Math.cos(angle) * radius}px`;
+    sparkle.style.top = `${y + Math.sin(angle) * radius}px`;
+    sparkle.style.width = `${6 + Math.random() * 6}px`;
+    sparkle.style.height = sparkle.style.width;
+    document.body.appendChild(sparkle);
+    setTimeout(() => sparkle.remove(), 700 + Math.random() * 300);
+  }
 }
 
 function spawnBalloon() {
@@ -298,13 +334,25 @@ function spawnBalloon() {
   document.body.appendChild(el);
   const remove = setTimeout(() => el.remove(), 16000);
   el.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const rect = el.getBoundingClientRect();
-    createBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, `hsla(${hue},95%,70%,1)`);
-    el.classList.add("popped");
-    clearTimeout(remove);
-    setTimeout(() => el.remove(), 300);
-  });
+  e.stopPropagation();
+  const rect = el.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+
+  // 💥 Ledakan pecahan balon
+  createBurst(cx, cy, `hsla(${hue},95%,70%,1)`);
+
+  // ✨ Tambahkan 10–15 sparkle acak di sekitar titik
+  for (let i = 0; i < 12; i++) {
+    const offsetX = (Math.random() - 0.5) * 100;
+    const offsetY = (Math.random() - 0.5) * 100;
+    createSparkle(cx + offsetX, cy + offsetY);
+  }
+
+  el.classList.add("popped");
+  clearTimeout(remove);
+  setTimeout(() => el.remove(), 300);
+});
 }
 
 function initBalloons() {
@@ -407,7 +455,6 @@ function initFireworks(canvas, ctx, confetti, fireworks) {
 
   draw();
 }
-
 
 // =========================
 //  INIT ALL ON LOAD
