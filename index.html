@@ -14,11 +14,7 @@
   />
 
   <!-- Styles -->
-  <link rel="stylesheet" href="style.css" />
-
-  <!-- Preload 3D Models -->
-  <link rel="preload" as="fetch" href="models/revolver.glb" crossorigin>
-  <link rel="preload" as="fetch" href="models/flashlight.glb" crossorigin>
+  <link rel="stylesheet" href="style.css?v=3" />
 
   <!-- 3D Model Viewer -->
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
@@ -96,38 +92,46 @@
 
       <div class="photo-slider" aria-label="Swipeable photo gallery">
         <button class="slider-control slider-control--prev" type="button" aria-label="Foto sebelumnya">‹</button>
+
         <div class="slides-window">
           <div class="slides">
             <figure class="slide" data-reveal>
               <img class="slide__image" src="pictures/foto1.jpg" alt="Andy smiling in a blue blazer with palm trees behind him." loading="lazy" />
               <figcaption>The ocean breeze, your easy smile, and the way every horizon feels calmer with you in it.</figcaption>
             </figure>
+
             <figure class="slide" data-reveal>
               <img class="slide__image" src="pictures/foto2.jpg" alt="Andy smiling inside a cozy lounge." loading="lazy" />
               <figcaption>Quiet in-between moments where the world slows down and we get to simply exist together.</figcaption>
             </figure>
+
             <figure class="slide" data-reveal>
               <img class="slide__image" src="pictures/foto3.jpg" alt="Andy and his partner smiling at Borobudur Temple." loading="lazy" />
               <figcaption>Exploring Borobudur with you felt like unlocking a brand-new chapter in our story.</figcaption>
             </figure>
+
             <figure class="slide" data-reveal>
               <img class="slide__image" src="pictures/foto4.jpg" alt="Andy resting on a pillow with a gentle smile." loading="lazy" />
               <figcaption>Even your calmest moments are filled with warmth—it’s my favorite comfort.</figcaption>
             </figure>
+
             <figure class="slide" data-reveal>
               <img class="slide__image" src="pictures/foto5.jpg" alt="Andy and his partner smiling during dinner together." loading="lazy" />
               <figcaption>Dinner dates and shared laughter—proof that ordinary days become magic when you’re beside me.</figcaption>
             </figure>
+
             <figure class="slide" data-reveal>
               <img class="slide__image" src="pictures/foto6.jpg" alt="Andy working on a tablet beside a Yakitori Night sign." loading="lazy" />
               <figcaption>You balance focus and fun so effortlessly—always ready with a grin and a clever idea.</figcaption>
             </figure>
+
             <figure class="slide" data-reveal>
               <img class="slide__image" src="pictures/foto7.jpg" alt="Andy wearing a sunhat and smiling at an ancient temple." loading="lazy" />
               <figcaption>Your playful spirit keeps every adventure bright, no matter how far from home we roam.</figcaption>
             </figure>
           </div>
         </div>
+
         <button class="slider-control slider-control--next" type="button" aria-label="Foto berikutnya">›</button>
       </div>
     </section>
@@ -156,20 +160,38 @@
     <span class="tape__strip tape__strip--two">POLICE CROSS LINE DO NOT CROSS</span>
   </div>
 
-  <div class="gadget gadget--pistol" aria-hidden="true">
+  <!-- Gadgets -->
+  <div class="gadget gadget--pistol" aria-hidden="true" style="left: 6%; bottom: 6%;">
     <div class="gadget__pivot">
-      <model-viewer src="models/revolver.glb" alt="3D revolver model" camera-controls disable-zoom interaction-prompt="none"
-        shadow-intensity="1" exposure="1.05"></model-viewer>
+      <model-viewer
+        src="models/revolver.glb"
+        alt="3D revolver model"
+        camera-controls
+        disable-zoom
+        interaction-prompt="none"
+        shadow-intensity="1"
+        exposure="1.05"
+        style="background: transparent;"
+      ></model-viewer>
     </div>
   </div>
 
-  <div class="gadget gadget--flashlight" aria-hidden="true">
+  <div class="gadget gadget--flashlight" aria-hidden="true" style="right: 6%; bottom: 6%;">
     <div class="gadget__pivot">
-      <model-viewer src="models/flashlight.glb" alt="3D flashlight model" camera-controls disable-zoom interaction-prompt="none"
-        shadow-intensity="1" exposure="1.05"></model-viewer>
+      <model-viewer
+        src="models/flashlight.glb"
+        alt="3D flashlight model"
+        camera-controls
+        disable-zoom
+        interaction-prompt="none"
+        shadow-intensity="1"
+        exposure="1.05"
+        style="background: transparent;"
+      ></model-viewer>
     </div>
   </div>
 
+  <!-- Target Crosshair -->
   <div class="target" id="targetCursor" aria-hidden="true">
     <span class="target__ring"></span>
     <span class="target__cross target__cross--vertical"></span>
@@ -178,6 +200,6 @@
   </div>
 
   <!-- Scripts -->
-  <script src="script.js" defer></script>
+  <script src="script.js?v=3" defer></script>
 </body>
 </html>
