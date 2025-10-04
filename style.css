@@ -651,6 +651,27 @@ body.is-aiming .target {
   margin-bottom: 100px;
 }
 
+/* =========================
+   CORNER DECORATION IMAGE
+========================= */
+.corner-image {
+  position: fixed;
+  bottom: -100px;
+  left: -200px;
+  width: 600px; /* atur ukuran sesuai kebutuhan */
+  height: auto;
+  z-index: 1;
+  pointer-events: none; /* biar nggak ganggu klik */
+  transform: translate(10%, 10%); /* biar agak keluar sedikit ke luar layar */
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* efek hover (opsional) */
+.corner-image:hover {
+  opacity: 1;
+  transform: translate(0, 0) scale(1.03);
+}
+
 @keyframes burstMove {
   from { transform: scale(0.5) translate(0, 0); opacity: 1; }
   to { transform: scale(1) translate(60px, 0); opacity: 0; }
@@ -702,4 +723,6 @@ body.is-aiming .target {
   body { cursor: default; }
   .target { display: none; }
   .time-grid { grid-template-columns: repeat(2, 1fr); }
+  .closing-note {margin-bottom: 50px; }
+  .corner-image {width: 100px; transform: translate(5%, 5%);}
   }
