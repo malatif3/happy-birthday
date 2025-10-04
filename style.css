@@ -183,6 +183,14 @@ body {
   padding: 3.5rem 0;
 }
 
+.slides {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 380px; /* bukan vw biar stabil */
+}
+
 .slide__image {
   width: 100%;
   height: auto; /* biar proporsional dengan width */
@@ -191,20 +199,6 @@ body {
   object-fit: cover;
   aspect-ratio: 4 / 3; /* bikin rasio stabil dan rapi */
   max-height: 420px; /* batas maksimum */
-}
-
-.slide {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  transform-origin: center;
-  border-radius: 28px;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.35);
-  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.45s ease;
-  opacity: 0;
-  box-shadow: var(--shadow-xl);
 }
 
 .slide.is-active {
