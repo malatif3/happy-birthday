@@ -267,15 +267,12 @@ function initAimFollowers() {
   const toDegrees = 180 / Math.PI;
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
-  const toDegrees = 180 / Math.PI;
-  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
-
   const updateAim = (element, pointerX, pointerY) => {
     if (!element) return;
     const pivot = element.querySelector(".gadget__pivot");
     const rect = (pivot ?? element).getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height * 0.65;
+    const centerY = rect.top + rect.height / 2;
     const angle = Math.atan2(pointerY - centerY, pointerX - centerX);
     element.style.setProperty("--aim-angle", `${angle}rad`);
     const centerY = rect.top + rect.height / 2;
