@@ -5,19 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Happy Birthday my best man, Andy</title>
   <link rel="stylesheet" href="style.css">
-  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.10.74/build/spline-viewer.js"></script>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </head>
 <body>
   <canvas id="confetti"></canvas>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false"
+    aria-label="Toggle light and dark mode">
+    <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
+    <span class="theme-toggle__label">Dark</span>
+  </button>
   <div class="ballistic-wrapper">
     <header data-reveal>
-      <div class="header-bar">
-        <h1>Happy Birthday my best man, Andy</h1>
-        <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Toggle light and dark mode">
-          <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
-          <span class="theme-toggle__label">Dark</span>
-        </button>
-      </div>
+      <h1>Happy Birthday my best man, Andy</h1>
       <p id="typing" aria-live="polite"></p>
     </header>
 
@@ -104,32 +103,15 @@
 
   <div class="gadget pistol" aria-hidden="true">
     <div class="gadget__pivot">
-      <div class="sketchfab-embed-wrapper">
-        <iframe title="GameReady: Colt Python Revolver" frameborder="0" allowfullscreen mozallowfullscreen="true"
-          webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking
-          execution-while-out-of-viewport execution-while-not-rendered web-share
-          src="https://sketchfab.com/models/3def6e3980e64dfa832f298004ce1b94/embed">
-        </iframe>
-      </div>
+      <model-viewer src="models/revolver.glb" alt="3D revolver model" camera-controls disable-zoom interaction-prompt="none"
+        ar-modes="webxr scene-viewer quick-look" shadow-intensity="1" exposure="1.05"></model-viewer>
     </div>
-    <p class="sketchfab-credit">
-      <a href="https://sketchfab.com/3d-models/gameready-colt-python-revolver-3def6e3980e64dfa832f298004ce1b94?utm_medium=embed&utm_campaign=share-popup&utm_content=3def6e3980e64dfa832f298004ce1b94"
-        target="_blank" rel="nofollow">GameReady: Colt Python Revolver</a>
-      by
-      <a href="https://sketchfab.com/HYQQM?utm_medium=embed&utm_campaign=share-popup&utm_content=3def6e3980e64dfa832f298004ce1b94"
-        target="_blank" rel="nofollow">HYQQM</a>
-      on
-      <a href="https://sketchfab.com?utm_medium=embed&utm_campaign=share-popup&utm_content=3def6e3980e64dfa832f298004ce1b94"
-        target="_blank" rel="nofollow">Sketchfab</a>
-    </p>
   </div>
 
   <div class="gadget flashlight" aria-hidden="true">
     <div class="gadget__pivot">
-      <div class="spline-embed-wrapper">
-        <spline-viewer url="https://prod.spline.design/CKVFB7YcPr4B-VsR/scene.splinecode" aria-label="Flashlight">
-        </spline-viewer>
-      </div>
+      <model-viewer src="models/flashlight.glb" alt="3D flashlight model" camera-controls disable-zoom interaction-prompt="none"
+        ar-modes="webxr scene-viewer quick-look" shadow-intensity="1" exposure="1.05"></model-viewer>
     </div>
   </div>
 
