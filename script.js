@@ -240,28 +240,20 @@ function initAimFollowers() {
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
 
-  // selisih posisi kursor dari tengah layar
+  // Selisih posisi kursor dari tengah objek
   const dx = x - cx;
   const dy = y - cy;
 
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
+  // Hitung sudut menggunakan atan2 untuk "look-at" effect
+  const yaw = Math.atan2(dx, 300) * toDeg;      // Horizontal (kanan/kiri)
+  const pitch = Math.atan2(-dy, 300) * toDeg;   // Vertikal (atas/bawah)
 
-  // arah yaw: gerak horizontal (kanan–kiri)
-  // arah pitch: gerak vertikal (atas–bawah)
-  // Untuk rotasi lebih sensitif:
-  const yaw = Math.atan2(dx, 300) * toDeg;  // ubah 500 → 300
-
-  // Untuk limit lebih besar:
-  const yawClamped = clamp(yaw, -60, 60);   // ubah -45,45 → -60,60
-
-  // batasi rotasi biar gak ekstrem
-  const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+  // Batasi rotasi
   const yawClamped = clamp(yaw, -60, 60);
   const pitchClamped = clamp(pitch, -30, 30);
 
-  // orientasi model-viewer: X = pitch, Y = yaw, Z = roll
-  model.orientation = `${-pitchClamped.toFixed(2)}deg ${yawClamped.toFixed(2)}deg 0deg`;
+  // Set orientasi: "pitch yaw roll"
+  model.orientation = `${pitchClamped.toFixed(2)}deg ${yawClamped.toFixed(2)}deg 0deg`;
 }
 
   document.addEventListener("pointermove", (e) => {
