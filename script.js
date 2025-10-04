@@ -247,18 +247,23 @@ function initAimFollowers() {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  // arah yaw: gerak horizontal (kanan–kiri)
-  // arah pitch: gerak vertikal (atas–bawah)
-  const yaw = (dx / vw) * 120;       // kanan positif, kiri negatif
-  const pitch = (dy / vh) * 90;      // bawah positif, atas negatif
+  // hitung sudut relatif dari posisi kursor
+  // yaw → gerak kanan/kiri
+  // pitch → gerak atas/bawah
+  const yaw = (dx / vw) * 90;      // kanan positif
+  const pitch = (dy / vh) * 60;    // bawah positif
 
-  // batasi rotasi biar gak ekstrem
+  // batasi biar gak ekstrem
   const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
-  const yawClamped = clamp(yaw, -60, 60);
-  const pitchClamped = clamp(pitch, -30, 30);
+  const yawClamped = clamp(yaw, -45, 45);
+  const pitchClamped = clamp(pitch, -25, 25);
 
-  // orientasi model-viewer: X = pitch, Y = yaw, Z = roll
-  model.orientation = `${-pitchClamped.toFixed(2)}deg ${yawClamped.toFixed(2)}deg 0deg`;
+  // karena axis blender dan webgl beda, kita remap:
+  // orientation: rotate around Y (yaw), then X (pitch)
+  model.style.transform = `
+    rotateY(${yawClamped.toFixed(2)}deg)
+    rotateX(${-pitchClamped.toFixed(2)}deg)
+  `;
 }
 
   document.addEventListener("pointermove", (e) => {
