@@ -234,34 +234,31 @@ function initAimFollowers() {
   const toDeg = 180 / Math.PI;
   const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
-  function updateAim(wrapper, x, y) {
-  if (!wrapper) return;
-  const rect = wrapper.getBoundingClientRect();
+  function updateAim(model, x, y) {
+  if (!model) return;
+  const rect = model.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
 
-  // selisih posisi kursor dari tengah objek
+  // selisih posisi kursor dari tengah layar
   const dx = x - cx;
   const dy = y - cy;
 
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  // hitung sudut relatif dari posisi kursor
-  // yaw → gerak kanan/kiri (rotasi Y)
-  // pitch → gerak atas/bawah (rotasi X)
-  const yaw = (dx / vw) * 60;      // kanan positif
-  const pitch = (dy / vh) * 40;    // bawah positif
+  // arah yaw: gerak horizontal (kanan–kiri)
+  // arah pitch: gerak vertikal (atas–bawah)
+  const yaw = (dx / vw) * 120;       // kanan positif, kiri negatif
+  const pitch = (dy / vh) * 90;      // bawah positif, atas negatif
 
-  // batasi biar gak ekstrem
-  const yawClamped = clamp(yaw, -35, 35);
-  const pitchClamped = clamp(pitch, -20, 20);
+  // batasi rotasi biar gak ekstrem
+  const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+  const yawClamped = clamp(yaw, -60, 60);
+  const pitchClamped = clamp(pitch, -30, 30);
 
-  // terapkan rotasi ke wrapper, bukan ke model-viewer
-  wrapper.style.transform = `
-    rotateY(${yawClamped.toFixed(2)}deg)
-    rotateX(${-pitchClamped.toFixed(2)}deg)
-  `;
+  // orientasi model-viewer: X = pitch, Y = yaw, Z = roll
+  model.orientation = `${-pitchClamped.toFixed(2)}deg ${yawClamped.toFixed(2)}deg 0deg`;
 }
 
   document.addEventListener("pointermove", (e) => {
