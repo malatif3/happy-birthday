@@ -254,6 +254,16 @@ body {
   background: rgba(12, 18, 34, 0.75);
 }
 
+.gadget--pistol {
+  right: clamp(3rem, 8vw, 6rem);
+  bottom: clamp(3rem, 6vw, 5rem);
+}
+
+.gadget--flashlight {
+  left: clamp(3rem, 8vw, 6rem);
+  bottom: clamp(3rem, 6vw, 5rem);
+}
+
 /* =========================
    NOTE / MESSAGE
 ========================= */
