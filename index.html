@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Happy Birthday my best man, Andy</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Handlee&display=swap">
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </head>
 <body>
@@ -30,13 +31,7 @@
       <div class="time-grid" role="presentation">
         <article class="time-unit" data-reveal>
           <span class="time-number" id="years">0</span>
-          <span class="time-label">Years</span>
-        </article>
-        <article class="time-unit" data-reveal>
-          <span class="time-number" id="months">0</span>
-          <span class="time-label">Months</span>
-        </article>
-        <article class="time-unit" data-reveal>
+@@ -40,88 +41,115 @@
           <span class="time-number" id="days">0</span>
           <span class="time-label">Days</span>
         </article>
@@ -64,6 +59,8 @@
       <div class="photo-section__intro">
         <h2 id="galleryHeading">Memory Gallery (Placeholder)</h2>
         <p>This is where the highlight reel will live. For now, swipe left or right to preview the placeholders.</p>
+        <h2 id="galleryHeading">Memory Gallery</h2>
+        <p>Swipe through a few of the memories that remind us how lucky we are to have found each other.</p>
       </div>
       <div class="photo-slider" aria-label="Swipeable photo gallery">
         <button class="slider-nav prev" aria-label="Previous photo" type="button" data-reveal>‹</button>
@@ -72,22 +69,53 @@
             <figure class="slide" data-reveal>
               <div class="photo-placeholder">The first snapshot will appear here.</div>
               <figcaption>Start planning the story behind this standout moment.</figcaption>
+              <img class="slide__image" src="assets/photos/image_1.png" alt="Andy smiling in a blue blazer with palm trees behind him." loading="lazy">
+              <figcaption>The ocean breeze, your easy smile, and the way every horizon feels calmer with you in it.</figcaption>
             </figure>
             <figure class="slide" data-reveal>
               <div class="photo-placeholder">A space reserved for togetherness.</div>
               <figcaption>Capture the warmth of being surrounded by your favorite people.</figcaption>
+              <img class="slide__image" src="assets/photos/image_2.png" alt="Andy smiling inside a cozy lounge." loading="lazy">
+              <figcaption>Quiet in-between moments where the world slows down and we get to simply exist together.</figcaption>
             </figure>
             <figure class="slide" data-reveal>
               <div class="photo-placeholder">Special memories coming soon.</div>
               <figcaption>New adventures are already lining up for a place in this frame.</figcaption>
+              <img class="slide__image" src="assets/photos/image_3.png" alt="Andy and his partner smiling at Borobudur Temple." loading="lazy">
+              <figcaption>Exploring Borobudur with you felt like unlocking a brand-new chapter in our story.</figcaption>
             </figure>
             <figure class="slide" data-reveal>
               <div class="photo-placeholder">Room reserved for a surprise.</div>
               <figcaption>Maybe a secret photo from your closest crew?</figcaption>
+              <img class="slide__image" src="assets/photos/image_4.png" alt="Andy resting on a pillow with a gentle smile." loading="lazy">
+              <figcaption>Even your calmest moments are filled with warmth—it&apos;s my favorite comfort.</figcaption>
+            </figure>
+            <figure class="slide" data-reveal>
+              <img class="slide__image" src="assets/photos/image_5.png" alt="Andy and his partner smiling during dinner together." loading="lazy">
+              <figcaption>Dinner dates and shared laughter—proof that ordinary days become magic when you&apos;re beside me.</figcaption>
+            </figure>
+            <figure class="slide" data-reveal>
+              <img class="slide__image" src="assets/photos/image_6.png" alt="Andy working on a tablet beside a Yakitori Night sign." loading="lazy">
+              <figcaption>You balance focus and fun so effortlessly—always ready with a grin and a clever idea.</figcaption>
+            </figure>
+            <figure class="slide" data-reveal>
+              <img class="slide__image" src="assets/photos/image_7.png" alt="Andy wearing a sunhat and smiling at an ancient temple." loading="lazy">
+              <figcaption>Your playful spirit keeps every adventure bright, no matter how far from home we roam.</figcaption>
             </figure>
           </div>
         </div>
         <button class="slider-nav next" aria-label="Next photo" type="button" data-reveal>›</button>
+      </div>
+    </section>
+
+    <section class="paper-note" data-reveal aria-labelledby="noteTitle">
+      <div class="paper-note__sheet">
+        <p id="noteTitle" class="paper-note__title">Happy Birthday! 🥳</p>
+        <p class="paper-note__body">Wishing you another beautiful year ahead 🎂✨</p>
+        <p class="paper-note__body">Thank you for everything you’ve done, and for always being there for me. Even though I’m still quite new in your life — it’s only been about three years since we met — you welcomed me with so much warmth.</p>
+        <p class="paper-note__body">I feel so happy and incredibly lucky to have met you and to have you in my life. I hope you’re always blessed with good health, success, and endless happiness in every step you take.</p>
+        <p class="paper-note__body">May our relationship continue to grow beautifully and remain strong, no matter what happens. 🤍</p>
+        <p class="paper-note__signature">I love you. ❤</p>
       </div>
     </section>
 
@@ -105,6 +133,10 @@
     <div class="gadget__pivot">
       <model-viewer src="38_special_revolver.glb" alt="3D revolver model" camera-controls disable-zoom interaction-prompt="none"
         ar-modes="webxr scene-viewer quick-look" shadow-intensity="1" exposure="1.05"></model-viewer>
+      <div class="gadget__float">
+        <model-viewer src="38_special_revolver.glb" alt="3D revolver model" camera-controls disable-zoom interaction-prompt="none"
+          ar-modes="webxr scene-viewer quick-look" shadow-intensity="1" exposure="1.05"></model-viewer>
+      </div>
     </div>
   </div>
 
@@ -112,6 +144,10 @@
     <div class="gadget__pivot">
       <model-viewer src="flashlight (1).glb" alt="3D flashlight model" camera-controls disable-zoom interaction-prompt="none"
         ar-modes="webxr scene-viewer quick-look" shadow-intensity="1" exposure="1.05"></model-viewer>
+      <div class="gadget__float">
+        <model-viewer src="flashlight (1).glb" alt="3D flashlight model" camera-controls disable-zoom interaction-prompt="none"
+          ar-modes="webxr scene-viewer quick-look" shadow-intensity="1" exposure="1.05"></model-viewer>
+      </div>
     </div>
   </div>
 
