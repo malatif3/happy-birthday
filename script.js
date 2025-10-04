@@ -130,26 +130,19 @@ function initSlider() {
   let current = 0;
 
   const arrange = () => {
-    const container = document.querySelector(".slides-window");
-    const containerWidth = container ? container.getBoundingClientRect().width : window.innerWidth;
-    const baseShift = Math.min(containerWidth / 2.2, 240);
-
     slides.forEach((slide, index) => {
-      let offset = index - current;
-      const half = Math.floor(slides.length / 2);
-      if (offset > half) offset -= slides.length;
-      if (offset < -half) offset += slides.length;
-
-      const abs = Math.abs(offset);
-      const translateX = offset * baseShift;
-      const rotateY = offset * -8;
-      const scale = Math.max(0.65, 1 - abs * 0.18);
-      const depthOpacity = abs > 2 ? 0 : Math.max(0.35, 1 - abs * 0.25);
-
-      slide.style.transform = `translate(-50%, -50%) translateX(${translateX}px) rotateY(${rotateY}deg) scale(${scale})`;
-      slide.style.zIndex = slides.length - abs;
-      slide.style.opacity = depthOpacity;
-      slide.classList.toggle("is-active", offset === 0);
+      // Hapus semua class dulu
+      slide.classList.remove("is-active", "is-next", "is-prev");
+      
+      // Tentukan posisi
+      if (index === current) {
+        slide.classList.add("is-active");
+      } else if (index === (current + 1) % slides.length) {
+        slide.classList.add("is-next");
+      } else if (index === (current - 1 + slides.length) % slides.length) {
+        slide.classList.add("is-prev");
+      }
+      // Slide lainnya tidak dapat class apapun (otomatis hidden by CSS)
     });
   };
 
@@ -162,9 +155,8 @@ function initSlider() {
   nextButton?.addEventListener("click", () => goTo(current + 1));
 
   window.addEventListener("resize", arrange);
-  arrange();
+  arrange(); // Jalankan sekali saat load
 }
-
 
 // =========================
 //  SPARKLE EFFECT

@@ -104,6 +104,8 @@ body {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   text-shadow: 0 0 18px rgba(255, 200, 87, 0.6);
+  background: transparent;
+  border: none;
 }
 
 .hero__subtitle {
@@ -111,17 +113,14 @@ body {
   color: var(--accent);
   font-weight: 600;
   letter-spacing: 0.12em;
+  background: transparent;
 }
 
 /* =========================
    TIME CARD / COUNTER
 ========================= */
 .time-card__header {
-  background: var(--bg-panel);
-  border: 1px solid var(--panel-border);
-  border-radius: 24px;
   padding: clamp(1.8rem, 4vw, 2.6rem);
-  box-shadow: var(--shadow-lg);
   text-align: center;
   display: grid;
   gap: 0.75rem;
@@ -175,6 +174,7 @@ body {
 .photo-section {
   display: grid;
   gap: 1.6rem;
+  margin-bottom: 4rem;
 }
 
 .photo-section__intro {
@@ -186,34 +186,70 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 1rem;
 }
 
 .slides-window {
   overflow: visible;
   position: relative;
-  padding: 3.5rem 0;
+  width: 100%;
+  max-width: 700px;
+  padding: 3rem 0;
 }
 
 .slides {
   position: relative;
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: clamp(260px, 45vw, 420px);
+  justify-content: center;
+  min-height: clamp(360px, 55vw, 520px);
   perspective: 1400px;
 }
 
 .slide {
   position: absolute;
-  top: 50%;
   left: 50%;
-  width: clamp(220px, 60vw, 420px);
-  transform: translate(-50%, -50%);
+  top: 50%;
+  width: clamp(300px, 75vw, 500px);
   border-radius: 20px;
   overflow: hidden;
   box-shadow: var(--shadow-xl);
   background: rgba(0, 0, 0, 0.35);
-  transition: all 0.5s ease;
+  transition: all 0.65s cubic-bezier(0.23, 1, 0.32, 1);
+  transform-origin: center center;
+  pointer-events: none;
+}
+
+/* Slide aktif - di depan, centered */
+.slide.is-active {
+  transform: translate(-50%, -50%) scale(1);
+  z-index: 10;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Slide berikutnya - kanan belakang, lebih jauh */
+.slide.is-next {
+  transform: translate(-20%, -50%) scale(0.8) rotateY(-12deg);
+  z-index: 5;
+  opacity: 0.5;
+  filter: brightness(0.7);
+}
+
+/* Slide sebelumnya - kiri belakang, lebih jauh */
+.slide.is-prev {
+  transform: translate(-80%, -50%) scale(0.8) rotateY(12deg);
+  z-index: 5;
+  opacity: 0.5;
+  filter: brightness(0.7);
+}
+
+/* Slide lainnya - tersembunyi */
+.slide:not(.is-active):not(.is-next):not(.is-prev) {
+  transform: translate(-50%, -50%) scale(0.6);
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .slide__image {
@@ -223,35 +259,43 @@ body {
   object-fit: cover;
   border-radius: 20px 20px 0 0;
   display: block;
-  margin: 0 auto;
+  user-select: none;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
 .slide figcaption {
   padding: 1rem 1.4rem;
-  background: rgba(4, 6, 13, 0.75);
+  background: rgba(4, 6, 13, 0.85);
   color: var(--text-soft);
   font-size: 0.95rem;
   backdrop-filter: blur(12px);
   border-radius: 0 0 20px 20px;
+  user-select: none;
 }
 
 .slider-control {
-  background: rgba(8, 12, 24, 0.55);
+  background: rgba(8, 12, 24, 0.65);
   border: none;
   color: var(--text);
   border-radius: 50%;
-  width: 46px;
-  height: 46px;
-  font-size: 1.6rem;
+  width: 50px;
+  height: 50px;
+  font-size: 1.8rem;
   cursor: pointer;
   box-shadow: var(--shadow-lg);
-  transition: 0.3s;
-  z-index: 5;
+  transition: all 0.3s ease;
+  z-index: 20;
+  flex-shrink: 0;
+  backdrop-filter: blur(8px);
 }
 
 .slider-control:hover {
-  background: rgba(12, 18, 34, 0.75);
+  background: rgba(12, 18, 34, 0.85);
+  transform: scale(1.15);
+}
+
+.slider-control:active {
+  transform: scale(0.95);
 }
 
 /* =========================
@@ -317,12 +361,10 @@ body {
   height: clamp(160px, 26vw, 320px);
   z-index: 8;
   transform-style: preserve-3d;
-  /* Pastikan tidak dibalik ke arah user */
   perspective: 800px;
   transform-origin: center bottom;
   transition: transform 0.25s ease-out;
 }
-
 
 .gadget--pistol { left: 3vw; }
 .gadget--flashlight { right: 3vw; }
