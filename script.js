@@ -1,14 +1,9 @@
-const typingText = "Setiap misi sudah kamu jalani—malam ini kita rayakan semua kemenanganmu.";
-const baseDateParts = {
-  year: 1974,
-  month: 10,
-  day: 4,
-  hour: 0,
-  minute: 0,
-  second: 0
-};
-const timezoneFormatter = new Intl.DateTimeFormat("en-US", {
-  timeZone: "Etc/GMT+7",
+const INTRO_TEXT = "Setiap misi sudah kamu jalani—malam ini kita rayakan semua kemenanganmu.";
+const BIRTH_ISO = "1974-10-04T00:00:00-07:00";
+const TIME_ZONE = "America/Los_Angeles";
+const NUMBER_FORMAT = new Intl.NumberFormat("en-US");
+const ZONE_PARTS_FORMAT = new Intl.DateTimeFormat("sv-SE", {
+  timeZone: TIME_ZONE,
   year: "numeric",
   month: "2-digit",
   day: "2-digit",
@@ -17,8 +12,8 @@ const timezoneFormatter = new Intl.DateTimeFormat("en-US", {
   second: "2-digit",
   hour12: false
 });
-const baseDateFormatter = new Intl.DateTimeFormat("id-ID", {
-  timeZone: "Etc/GMT+7",
+const BIRTH_FORMAT = new Intl.DateTimeFormat("id-ID", {
+  timeZone: TIME_ZONE,
   year: "numeric",
   month: "long",
   day: "numeric",
@@ -27,78 +22,71 @@ const baseDateFormatter = new Intl.DateTimeFormat("id-ID", {
   second: "2-digit",
   hour12: false
 });
-const numberFormatter = new Intl.NumberFormat("en-US");
-let typingIndex = 0;
-let lastSparkleTime = 0;
-const sparkleCooldown = 120;
-const sparkleChance = 0.55;
-const baseTimezoneOffset = "-07:00";
-const baseDateUTCValue = Date.UTC(
-  baseDateParts.year,
-  baseDateParts.month - 1,
-  baseDateParts.day,
-  baseDateParts.hour + 7,
-  baseDateParts.minute,
-  baseDateParts.second
-);
 
-function typingEffect() {
-  const typingContainer = document.getElementById("typing");
-  if (!typingContainer) return;
-  typingContainer.textContent = "";
+const birthParts = {
+  year: 1974,
+  month: 10,
+  day: 4,
+  hour: 0,
+  minute: 0,
+  second: 0
+};
 
-  function typeNext() {
-    if (typingIndex < typingText.length) {
-      typingContainer.textContent += typingText.charAt(typingIndex);
-      typingIndex += 1;
-      setTimeout(typeNext, 70);
-    }
-  }
+const birthUTC = new Date(BIRTH_ISO).getTime();
 
-  typeNext();
+function typeIntro() {
+  const target = document.getElementById("typing");
+  if (!target) return;
+  target.textContent = "";
+  let index = 0;
+
+  const step = () => {
+    if (index >= INTRO_TEXT.length) return;
+    target.textContent += INTRO_TEXT.charAt(index);
+    index += 1;
+    setTimeout(step, 70);
+  };
+
+  step();
 }
 
-function getTimezoneParts(date) {
-  return timezoneFormatter.formatToParts(date).reduce((acc, part) => {
-    if (part.type !== "literal") {
-      acc[part.type] = Number(part.value);
-    }
-    return acc;
-  }, {});
+function getZoneParts(date = new Date()) {
+  const formatted = ZONE_PARTS_FORMAT.format(date);
+  const [datePart, timePart] = formatted.split(/\s+/);
+  if (!timePart) return {};
+  const [year, month, day] = datePart.split("-").map(Number);
+  const [hour, minute, second] = timePart.split(":").map(Number);
+  return { year, month, day, hour, minute, second };
 }
 
-function updateTimezoneClock() {
-  const clock = document.getElementById("timezoneClock");
+function updateBirthDisplay() {
+  const birthTimeElement = document.getElementById("birthTime");
+  if (!birthTimeElement) return;
+  const formatted = BIRTH_FORMAT.format(new Date(birthUTC));
+  birthTimeElement.textContent = formatted;
+  birthTimeElement.setAttribute("datetime", BIRTH_ISO);
+}
+
+function updateZoneClock() {
+  const clock = document.getElementById("zoneClock");
   if (!clock) return;
-
-  const parts = getTimezoneParts(new Date());
+  const parts = getZoneParts();
   const pad = (value) => String(value).padStart(2, "0");
   clock.textContent = `${pad(parts.hour)}:${pad(parts.minute)}:${pad(parts.second)}`;
 }
 
-function updateBaseDateDisplay() {
-  const baseDateElement = document.getElementById("baseDateDisplay");
-  if (!baseDateElement) return;
+function updateElapsed() {
+  const parts = getZoneParts();
+  if (!parts.year) return;
 
-  const formatted = baseDateFormatter.format(new Date(baseDateUTCValue));
-  const pad = (value) => String(value).padStart(2, "0");
-  const isoString = `${baseDateParts.year}-${pad(baseDateParts.month)}-${pad(baseDateParts.day)}T${pad(baseDateParts.hour)}:${pad(baseDateParts.minute)}:${pad(baseDateParts.second)}${baseTimezoneOffset}`;
-  baseDateElement.textContent = formatted;
-  baseDateElement.setAttribute("datetime", isoString);
-}
-
-function updateElapsedTime() {
-  const nowParts = getTimezoneParts(new Date());
-  if (!nowParts.year) return;
-
-  let years = nowParts.year - baseDateParts.year;
-  let months = nowParts.month - baseDateParts.month;
-  let days = nowParts.day - baseDateParts.day;
+  let years = parts.year - birthParts.year;
+  let months = parts.month - birthParts.month;
+  let days = parts.day - birthParts.day;
 
   if (days < 0) {
     months -= 1;
-    const prevMonthLength = new Date(Date.UTC(nowParts.year, nowParts.month - 1, 0)).getUTCDate();
-    days += prevMonthLength;
+    const previousMonthDays = new Date(parts.year, parts.month - 1, 0).getDate();
+    days += previousMonthDays;
   }
 
   if (months < 0) {
@@ -106,111 +94,108 @@ function updateElapsedTime() {
     months += 12;
   }
 
-  const anchorUtc = Date.UTC(
-    baseDateParts.year + years,
-    baseDateParts.month - 1 + months,
-    baseDateParts.day + days,
-    baseDateParts.hour,
-    baseDateParts.minute,
-    baseDateParts.second
+  const anchor = new Date(
+    Date.UTC(
+      birthParts.year,
+      birthParts.month - 1,
+      birthParts.day,
+      birthParts.hour,
+      birthParts.minute,
+      birthParts.second
+    )
   );
 
-  const nowUtc = Date.UTC(
-    nowParts.year,
-    nowParts.month - 1,
-    nowParts.day,
-    nowParts.hour,
-    nowParts.minute,
-    nowParts.second
+  anchor.setUTCFullYear(anchor.getUTCFullYear() + years);
+  anchor.setUTCMonth(anchor.getUTCMonth() + months);
+  anchor.setUTCDate(anchor.getUTCDate() + days);
+
+  const nowComparable = Date.UTC(
+    parts.year,
+    parts.month - 1,
+    parts.day,
+    parts.hour,
+    parts.minute,
+    parts.second
   );
 
-  let diffMs = nowUtc - anchorUtc;
+  let diffMs = Math.max(0, nowComparable - anchor.getTime());
   const hours = Math.floor(diffMs / (1000 * 60 * 60));
   diffMs -= hours * 60 * 60 * 1000;
   const minutes = Math.floor(diffMs / (1000 * 60));
   diffMs -= minutes * 60 * 1000;
   const seconds = Math.floor(diffMs / 1000);
 
-  const map = {
-    years,
-    months,
-    days,
-    hours,
-    minutes,
-    seconds
-  };
-
-  Object.entries(map).forEach(([key, value]) => {
-    const target = document.getElementById(key);
-    if (target) {
-      target.textContent = numberFormatter.format(value);
+  const values = { years, months, days, hours, minutes, seconds };
+  Object.entries(values).forEach(([key, value]) => {
+    const element = document.getElementById(key);
+    if (element) {
+      element.textContent = NUMBER_FORMAT.format(value);
     }
   });
 }
 
 function initSlider() {
-  const slidesWindow = document.querySelector(".slides-window");
   const slides = Array.from(document.querySelectorAll(".slide"));
-  const prevButton = document.querySelector(".slider-nav.prev");
-  const nextButton = document.querySelector(".slider-nav.next");
-  let currentSlide = 0;
+  if (!slides.length) return;
 
-  function updateSlides() {
-    if (!slidesWindow || !slides.length) return;
-    const windowWidth = slidesWindow.getBoundingClientRect().width;
-    const baseShift = Math.min(windowWidth / 2.2, 220);
+  const prevButton = document.querySelector(".slider-control--prev");
+  const nextButton = document.querySelector(".slider-control--next");
+  let current = 0;
+
+  const arrange = () => {
+    const container = document.querySelector(".slider-window");
+    const containerWidth = container ? container.getBoundingClientRect().width : window.innerWidth;
+    const baseShift = Math.min(containerWidth / 2.2, 240);
 
     slides.forEach((slide, index) => {
-      let offset = index - currentSlide;
+      let offset = index - current;
       const half = slides.length / 2;
       if (offset > half) offset -= slides.length;
       if (offset < -half) offset += slides.length;
-      const absOffset = Math.abs(offset);
+      const abs = Math.abs(offset);
       const translateX = offset * baseShift;
-      const scale = Math.max(0.65, 1 - absOffset * 0.18);
-      const rotate = offset * -7;
-      const depthOpacity = absOffset > 2 ? 0 : Math.max(0.35, 1 - absOffset * 0.2);
+      const rotateY = offset * -8;
+      const scale = Math.max(0.65, 1 - abs * 0.18);
+      const depthOpacity = abs > 2 ? 0 : Math.max(0.35, 1 - abs * 0.25);
 
-      slide.style.transform = `translate(-50%, -50%) translateX(${translateX}px) scale(${scale}) rotateY(${rotate}deg)`;
-      slide.style.zIndex = String(slides.length - absOffset);
-      slide.style.opacity = depthOpacity;
-      slide.style.filter = absOffset === 0 ? "none" : "brightness(0.78)";
-      slide.style.pointerEvents = absOffset <= 2 ? "auto" : "none";
-      slide.classList.toggle("is-active", offset === 0);
-      slide.setAttribute("aria-hidden", offset === 0 ? "false" : "true");
-      slide.setAttribute("tabindex", offset === 0 ? "-1" : "0");
-      slide.setAttribute("aria-pressed", offset === 0 ? "true" : "false");
+      slide.style.transform = `translate(-50%, -50%) translateX(${translateX}px) rotateY(${rotateY}deg) scale(${scale})`;
+      slide.style.zIndex = String(slides.length - abs);
+      slide.style.opacity = depthOpacity.toString();
+      slide.style.filter = abs === 0 ? "none" : "brightness(0.8)";
+      const isActive = offset === 0;
+      slide.classList.toggle("is-active", isActive);
+      slide.setAttribute("aria-hidden", isActive ? "false" : "true");
+      slide.setAttribute("tabindex", isActive ? "0" : "-1");
     });
-  }
+  };
 
-  function goToSlide(index) {
-    if (!slides.length) return;
-    currentSlide = (index + slides.length) % slides.length;
-    updateSlides();
-  }
+  const goTo = (index) => {
+    current = (index + slides.length) % slides.length;
+    arrange();
+  };
 
-  prevButton?.addEventListener("click", () => goToSlide(currentSlide - 1));
-  nextButton?.addEventListener("click", () => goToSlide(currentSlide + 1));
+  prevButton?.addEventListener("click", () => goTo(current - 1));
+  nextButton?.addEventListener("click", () => goTo(current + 1));
 
   slides.forEach((slide, index) => {
     slide.setAttribute("role", "button");
     slide.addEventListener("click", () => {
-      if (index !== currentSlide) {
-        goToSlide(index);
+      if (index !== current) {
+        goTo(index);
       }
     });
     slide.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        if (index !== currentSlide) {
-          goToSlide(index);
+        if (index !== current) {
+          goTo(index);
         }
       }
     });
   });
 
-  window.addEventListener("resize", updateSlides);
-  updateSlides();
+  window.addEventListener("resize", arrange);
+  arrange();
 }
 
 function createSparkle(x, y) {
@@ -221,60 +206,40 @@ function createSparkle(x, y) {
   sparkle.style.height = `${size}px`;
   sparkle.style.left = `${x}px`;
   sparkle.style.top = `${y}px`;
-  sparkle.style.animationDuration = `${0.5 + Math.random() * 0.25}s`;
   document.body.appendChild(sparkle);
-  setTimeout(() => sparkle.remove(), 700);
+  setTimeout(() => sparkle.remove(), 600);
 }
 
-function handlePointerTrail() {
+function initSparkles() {
+  let lastTime = 0;
+  const cooldown = 120;
+  const chance = 0.55;
+
   document.addEventListener("pointermove", (event) => {
     const now = performance.now();
-    if (now - lastSparkleTime < sparkleCooldown) return;
-    const shouldCreate = now - lastSparkleTime > sparkleCooldown * 2 || Math.random() < sparkleChance;
-    if (!shouldCreate) return;
-    lastSparkleTime = now;
-    createSparkle(event.clientX, event.clientY);
+    if (now - lastTime < cooldown) return;
+    if (now - lastTime > cooldown * 2 || Math.random() < chance) {
+      lastTime = now;
+      createSparkle(event.clientX, event.clientY);
+    }
   });
 }
 
-function setupScrollReveal() {
-  const autoRevealSelectors = [
-    ".header-bar",
-    "#typing",
-    ".time-card__header",
-    ".time-card__timestamp",
-    ".time-grid",
-    ".celebration > *",
-    ".photo-section__intro > *",
-    ".closing-note p"
-  ];
+function initReveal() {
+  const candidates = document.querySelectorAll("[data-reveal]");
+  if (!candidates.length) return;
 
-  autoRevealSelectors.forEach((selector) => {
-    document.querySelectorAll(selector).forEach((element) => {
-      if (!element.hasAttribute("data-reveal")) {
-        element.setAttribute("data-reveal", "");
-      }
-    });
-  });
-
-  const revealTargets = document.querySelectorAll("[data-reveal]");
-  if (!revealTargets.length) return;
-
-  revealTargets.forEach((element, index) => {
-    const baseDelay = index * 0.05;
-    const randomDelay = Math.random() * 0.18;
-    const tilt = (Math.random() - 0.5) * 12;
-    const rotate = (Math.random() - 0.5) * 6;
-    const translate = 32 + Math.random() * 24;
-    element.style.setProperty("--reveal-delay", `${(baseDelay + randomDelay).toFixed(2)}s`);
-    element.style.setProperty("--reveal-tilt", `${tilt.toFixed(2)}deg`);
-    element.style.setProperty("--reveal-rotate", `${rotate.toFixed(2)}deg`);
-    element.style.setProperty("--reveal-translate", `${translate.toFixed(2)}px`);
+  candidates.forEach((element, index) => {
+    const delay = index * 0.05 + Math.random() * 0.18;
+    element.style.setProperty("--reveal-delay", `${delay.toFixed(2)}s`);
+    element.style.setProperty("--reveal-translate", `${(32 + Math.random() * 24).toFixed(2)}px`);
+    element.style.setProperty("--reveal-tilt", `${((Math.random() - 0.5) * 12).toFixed(2)}deg`);
+    element.style.setProperty("--reveal-rotate", `${((Math.random() - 0.5) * 6).toFixed(2)}deg`);
   });
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   if (prefersReducedMotion.matches) {
-    revealTargets.forEach((element) => element.classList.add("is-revealed"));
+    candidates.forEach((element) => element.classList.add("is-revealed"));
     return;
   }
 
@@ -287,21 +252,20 @@ function setupScrollReveal() {
         }
       });
     },
-    {
-      threshold: 0.2,
-      rootMargin: "0px 0px -10% 0px"
-    }
+    { threshold: 0.2, rootMargin: "0px 0px -10% 0px" }
   );
 
-  revealTargets.forEach((element) => observer.observe(element));
+  candidates.forEach((element) => observer.observe(element));
 }
 
-function setupAimFollowers() {
-  const targetCursor = document.getElementById("targetCursor");
-  const pistol = document.querySelector(".gadget.pistol");
-  const flashlight = document.querySelector(".gadget.flashlight");
+function initAimFollowers() {
+  const target = document.getElementById("targetCursor");
+  const pistol = document.querySelector(".gadget--pistol");
+  const flashlight = document.querySelector(".gadget--flashlight");
+  if (!target && !pistol && !flashlight) return;
 
-  if (!targetCursor && !pistol && !flashlight) return;
+  const toDegrees = 180 / Math.PI;
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
   const toDegrees = 180 / Math.PI;
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
@@ -348,69 +312,38 @@ function setupAimFollowers() {
 
   const revealCursor = () => {
     document.body.classList.add("is-aiming");
-    targetCursor?.classList.remove("is-hidden");
+    target?.classList.remove("is-hidden");
   };
 
   const handlePointerMove = (event) => {
-    const pointerX = event.clientX;
-    const pointerY = event.clientY;
-    if (Number.isNaN(pointerX) || Number.isNaN(pointerY)) return;
-
+    const { clientX, clientY } = event;
+    if (Number.isNaN(clientX) || Number.isNaN(clientY)) return;
     revealCursor();
-    if (targetCursor) {
-      targetCursor.style.setProperty("--cursor-x", `${pointerX}px`);
-      targetCursor.style.setProperty("--cursor-y", `${pointerY}px`);
+    if (target) {
+      target.style.setProperty("--cursor-x", `${clientX}px`);
+      target.style.setProperty("--cursor-y", `${clientY}px`);
     }
-    updateAim(pistol, pointerX, pointerY);
-    updateAim(flashlight, pointerX, pointerY);
+    updateAim(pistol, clientX, clientY);
+    updateAim(flashlight, clientX, clientY);
   };
 
   document.addEventListener("pointermove", handlePointerMove);
   document.addEventListener("pointerleave", () => {
-    targetCursor?.classList.add("is-hidden");
     document.body.classList.remove("is-aiming");
     resetAim();
   });
   document.addEventListener("pointerenter", () => {
-    if (!targetCursor) return;
-    revealCursor();
+    if (target) revealCursor();
   });
 
   const initialX = window.innerWidth / 2;
   const initialY = window.innerHeight / 2;
-  if (targetCursor) {
-    targetCursor.style.setProperty("--cursor-x", `${initialX}px`);
-    targetCursor.style.setProperty("--cursor-y", `${initialY}px`);
+  if (target) {
+    target.style.setProperty("--cursor-x", `${initialX}px`);
+    target.style.setProperty("--cursor-y", `${initialY}px`);
   }
   updateAim(pistol, initialX, initialY);
   updateAim(flashlight, initialX, initialY);
-}
-
-function setupThemeToggle() {
-  const toggle = document.querySelector("[data-theme-toggle]");
-  if (!toggle) return;
-
-  const root = document.documentElement;
-  const icon = toggle.querySelector(".theme-toggle__icon");
-  const label = toggle.querySelector(".theme-toggle__label");
-  const storageKey = "hb-theme";
-
-  function applyTheme(theme) {
-    const normalized = theme === "light" ? "light" : "dark";
-    root.dataset.theme = normalized;
-    localStorage.setItem(storageKey, normalized);
-    toggle.setAttribute("aria-pressed", normalized === "light" ? "true" : "false");
-    if (icon) icon.textContent = normalized === "light" ? "☀️" : "🌙";
-    if (label) label.textContent = normalized === "light" ? "Light" : "Dark";
-  }
-
-  const storedTheme = localStorage.getItem(storageKey);
-  applyTheme(storedTheme);
-
-  toggle.addEventListener("click", () => {
-    const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
-    applyTheme(nextTheme);
-  });
 }
 
 function createBurst(x, y, color) {
@@ -422,8 +355,7 @@ function createBurst(x, y, color) {
   const particles = 8;
   for (let i = 0; i < particles; i += 1) {
     const shard = document.createElement("span");
-    const angle = (360 / particles) * i;
-    shard.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+    shard.style.transform = `translate(-50%, -50%) rotate(${(360 / particles) * i}deg)`;
     shard.style.background = color;
     burst.appendChild(shard);
   }
@@ -435,15 +367,14 @@ function createBurst(x, y, color) {
 function spawnBalloon() {
   const balloon = document.createElement("div");
   balloon.className = "balloon";
-
   const hue = Math.floor(Math.random() * 360);
   const size = 70 + Math.random() * 50;
   const duration = 12 + Math.random() * 8;
-  const leftPosition = Math.random() * 100;
+  const left = Math.random() * 100;
 
   balloon.style.width = `${size}px`;
   balloon.style.height = `${size * 1.35}px`;
-  balloon.style.left = `calc(${leftPosition}vw)`;
+  balloon.style.left = `calc(${left}vw)`;
   balloon.style.animationDuration = `${duration}s`;
   balloon.style.background = `radial-gradient(circle at 30% 25%, rgba(255,255,255,0.7), hsla(${hue}, 90%, 65%, 0.95) 55%, hsla(${hue}, 90%, 55%, 0.95) 100%)`;
 
@@ -465,132 +396,167 @@ function spawnBalloon() {
   });
 }
 
-function startBalloons() {
+function initBalloons() {
   const minInterval = 1600;
   const maxInterval = 3200;
 
-  function scheduleNext() {
+  const schedule = () => {
     const delay = Math.random() * (maxInterval - minInterval) + minInterval;
     setTimeout(() => {
       spawnBalloon();
-      scheduleNext();
+      schedule();
     }, delay);
+  };
+
+  schedule();
+}
+
+function initThemeToggle() {
+  const toggle = document.querySelector("[data-theme-toggle]");
+  if (!toggle) return;
+  const root = document.documentElement;
+  const icon = toggle.querySelector(".theme-toggle__icon");
+  const label = toggle.querySelector(".theme-toggle__label");
+  const storageKey = "hb-theme";
+
+  const applyTheme = (theme) => {
+    const mode = theme === "light" ? "light" : "dark";
+    root.dataset.theme = mode;
+    localStorage.setItem(storageKey, mode);
+    toggle.setAttribute("aria-pressed", mode === "light" ? "true" : "false");
+    if (icon) icon.textContent = mode === "light" ? "☀️" : "🌙";
+    if (label) label.textContent = mode === "light" ? "Light" : "Dark";
+  };
+
+  applyTheme(localStorage.getItem(storageKey) || root.dataset.theme);
+
+  toggle.addEventListener("click", () => {
+    const next = root.dataset.theme === "dark" ? "light" : "dark";
+    applyTheme(next);
+  });
+}
+
+function initFireworks(canvas, ctx, confettiPieces, fireworks) {
+  function createConfetti() {
+    confettiPieces.length = 0;
+    for (let i = 0; i < 90; i += 1) {
+      confettiPieces.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 6 + 4,
+        dy: Math.random() * 1.5 + 0.5,
+        color: `hsl(${Math.random() * 360}, 90%, 60%)`
+      });
+    }
   }
 
-  scheduleNext();
-}
+  function drawConfetti() {
+    confettiPieces.forEach((piece) => {
+      ctx.beginPath();
+      ctx.arc(piece.x, piece.y, piece.r, 0, Math.PI * 2);
+      ctx.fillStyle = piece.color;
+      ctx.fill();
+    });
+  }
 
-const canvas = document.getElementById("confetti");
-const ctx = canvas.getContext("2d");
-let confettiPieces = [];
-let fireworks = [];
+  function updateConfetti() {
+    confettiPieces.forEach((piece) => {
+      piece.y += piece.dy;
+      if (piece.y > canvas.height + 12) {
+        piece.y = -10;
+        piece.x = Math.random() * canvas.width;
+      }
+    });
+  }
 
-function setupCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-
-function createConfetti() {
-  confettiPieces = Array.from({ length: 90 }, () => ({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    r: Math.random() * 6 + 4,
-    dy: Math.random() * 1.5 + 0.5,
-    color: `hsl(${Math.random() * 360}, 90%, 60%)`
-  }));
-}
-
-function drawConfetti() {
-  confettiPieces.forEach((piece) => {
-    ctx.beginPath();
-    ctx.arc(piece.x, piece.y, piece.r, 0, Math.PI * 2);
-    ctx.fillStyle = piece.color;
-    ctx.fill();
-  });
-}
-
-function updateConfetti() {
-  confettiPieces.forEach((piece) => {
-    piece.y += piece.dy;
-    if (piece.y > canvas.height + 10) {
-      piece.y = -10;
-      piece.x = Math.random() * canvas.width;
+  function createFirework(x, y) {
+    const colors = ["#ffc857", "#ff5f6d", "#43e5f7", "#c084fc"];
+    for (let i = 0; i < 30; i += 1) {
+      fireworks.push({
+        x,
+        y,
+        vx: (Math.random() - 0.5) * 7,
+        vy: (Math.random() - 0.5) * 7,
+        alpha: 1,
+        life: Math.random() * 40 + 30,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      });
     }
+  }
+
+  function updateFireworks() {
+    fireworks.forEach((particle) => {
+      particle.x += particle.vx;
+      particle.y += particle.vy;
+      particle.vy += 0.05;
+      particle.alpha -= 0.02;
+      particle.life -= 1;
+      if (particle.life <= 0) particle.alpha = 0;
+    });
+    for (let i = fireworks.length - 1; i >= 0; i -= 1) {
+      if (fireworks[i].alpha <= 0) {
+        fireworks.splice(i, 1);
+      }
+    }
+  }
+
+  function drawFireworks() {
+    fireworks.forEach((particle) => {
+      ctx.save();
+      ctx.globalAlpha = particle.alpha;
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = particle.color;
+      ctx.fill();
+      ctx.restore();
+    });
+  }
+
+  const resizeCanvas = () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    createConfetti();
+  };
+
+  const render = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    updateConfetti();
+    drawConfetti();
+    updateFireworks();
+    drawFireworks();
+    requestAnimationFrame(render);
+  };
+
+  resizeCanvas();
+  render();
+
+  window.addEventListener("resize", resizeCanvas);
+  document.addEventListener("click", (event) => {
+    if (event.target.closest("button, .slider-control, .slides, .slide, .note__paper")) return;
+    if (event.target.classList.contains("balloon")) return;
+    createFirework(event.clientX, event.clientY);
   });
 }
-
-function createFirework(x, y) {
-  const colors = ["#ffcc00", "#ff5f6d", "#43e5f7", "#c084fc"];
-  const particles = Array.from({ length: 30 }, () => ({
-    x,
-    y,
-    vx: (Math.random() - 0.5) * 7,
-    vy: (Math.random() - 0.5) * 7,
-    alpha: 1,
-    life: Math.random() * 40 + 30,
-    color: colors[Math.floor(Math.random() * colors.length)]
-  }));
-  fireworks.push(...particles);
-}
-
-document.addEventListener("click", (event) => {
-  if (event.target.closest("button, .slider-nav, .slides-window, .photo-placeholder")) return;
-  if (event.target.classList.contains("balloon")) return;
-  createFirework(event.clientX, event.clientY);
-});
-
-function updateFireworks() {
-  fireworks = fireworks.filter((particle) => particle.alpha > 0);
-  fireworks.forEach((particle) => {
-    particle.x += particle.vx;
-    particle.y += particle.vy;
-    particle.vy += 0.05;
-    particle.alpha -= 0.02;
-    particle.life -= 1;
-    if (particle.life <= 0) particle.alpha = 0;
-  });
-}
-
-function drawFireworks() {
-  fireworks.forEach((particle) => {
-    ctx.save();
-    ctx.globalAlpha = particle.alpha;
-    ctx.beginPath();
-    ctx.arc(particle.x, particle.y, 3, 0, Math.PI * 2);
-    ctx.fillStyle = particle.color;
-    ctx.fill();
-    ctx.restore();
-  });
-}
-
-function animate() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  updateConfetti();
-  drawConfetti();
-  updateFireworks();
-  drawFireworks();
-  requestAnimationFrame(animate);
-}
-
-window.addEventListener("resize", () => {
-  setupCanvas();
-  createConfetti();
-});
 
 window.addEventListener("DOMContentLoaded", () => {
-  typingEffect();
-  updateBaseDateDisplay();
-  updateElapsedTime();
-  setInterval(updateElapsedTime, 1000);
-  updateTimezoneClock();
-  setInterval(updateTimezoneClock, 1000);
+  typeIntro();
+  updateBirthDisplay();
+  updateZoneClock();
+  updateElapsed();
+  setInterval(updateZoneClock, 1000);
+  setInterval(updateElapsed, 1000);
   initSlider();
-  handlePointerTrail();
-  startBalloons();
-  setupThemeToggle();
-  setupScrollReveal();
-  setupAimFollowers();
-  setupCanvas();
-  createConfetti();
-  animate();
+  initSparkles();
+  initReveal();
+  initAimFollowers();
+  initThemeToggle();
+  initBalloons();
+
+  const canvas = document.getElementById("confetti");
+  const ctx = canvas?.getContext("2d");
+  if (canvas && ctx) {
+    const confettiPieces = [];
+    const fireworks = [];
+    initFireworks(canvas, ctx, confettiPieces, fireworks);
+  }
 });

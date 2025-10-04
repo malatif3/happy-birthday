@@ -1,24 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Happy Birthday my best man, Andy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Happy Birthday, Andy!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Handlee&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Handlee&display=swap">
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </head>
 <body>
-  <canvas id="confetti"></canvas>
-  <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false"
-    aria-label="Toggle light and dark mode">
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Toggle dark and light theme">
     <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
     <span class="theme-toggle__label">Dark</span>
   </button>
-  <div class="ballistic-wrapper">
-    <header data-reveal>
-      <h1>Happy Birthday my best man, Andy</h1>
-      <p id="typing" aria-live="polite"></p>
+
+  <main class="page" id="top">
+    <header class="hero" data-reveal>
+      <h1>Happy Birthday, Andy</h1>
+      <p class="hero__subtitle" id="typing" aria-live="polite"></p>
     </header>
 
     <section class="time-card" aria-labelledby="timeHeading" data-reveal>
@@ -35,24 +38,24 @@
           <span class="time-number" id="days">0</span>
           <span class="time-label">Days</span>
         </article>
-        <article class="time-unit" data-reveal>
-          <span class="time-number" id="hours">0</span>
-          <span class="time-label">Hours</span>
+        <article class="timeline__unit" data-reveal>
+          <span class="timeline__number" id="hours">0</span>
+          <span class="timeline__label">Hours</span>
         </article>
-        <article class="time-unit" data-reveal>
-          <span class="time-number" id="minutes">0</span>
-          <span class="time-label">Minutes</span>
+        <article class="timeline__unit" data-reveal>
+          <span class="timeline__number" id="minutes">0</span>
+          <span class="timeline__label">Minutes</span>
         </article>
-        <article class="time-unit" data-reveal>
-          <span class="time-number" id="seconds">0</span>
-          <span class="time-label">Seconds</span>
+        <article class="timeline__unit" data-reveal>
+          <span class="timeline__number" id="seconds">0</span>
+          <span class="timeline__label">Seconds</span>
         </article>
       </div>
     </section>
 
     <section class="celebration" aria-live="polite" data-reveal>
-      <p class="celebration__message">🎉 Happy Birthday! May every dream you&apos;ve carefully kept come to life one by one.</p>
-      <p class="celebration__note">Keep scrolling—your story has so many more chapters waiting to be filled with photos and memories.</p>
+      <p class="celebration__line">🎉 Happy Birthday! Semoga setiap mimpi yang kamu simpan rapi satu per satu jadi nyata.</p>
+      <p class="celebration__line">Tetap lanjutkan perjalananmu—masih banyak cerita indah yang menunggu kita isi bersama.</p>
     </section>
 
     <section class="photo-section" aria-labelledby="galleryHeading" data-reveal>
@@ -104,7 +107,7 @@
             </figure>
           </div>
         </div>
-        <button class="slider-nav next" aria-label="Next photo" type="button" data-reveal>›</button>
+        <button class="slider-control slider-control--next" type="button" aria-label="Foto berikutnya">›</button>
       </div>
     </section>
 
@@ -122,14 +125,14 @@
     <footer class="closing-note" data-reveal>
       <p>Thank you for making every mile of this meaningful journey unforgettable. Let&apos;s keep the celebration going with bright smiles and an open heart.</p>
     </footer>
+  </main>
+
+  <div class="tape" aria-hidden="true">
+    <span class="tape__strip tape__strip--one">POLICE CROSS LINE DO NOT CROSS</span>
+    <span class="tape__strip tape__strip--two">POLICE CROSS LINE DO NOT CROSS</span>
   </div>
 
-  <div class="crossline-tape" aria-hidden="true">
-    <span class="crossline crossline--one">POLICE CROSS LINE DO NOT CROSS</span>
-    <span class="crossline crossline--two">POLICE CROSS LINE DO NOT CROSS</span>
-  </div>
-
-  <div class="gadget pistol" aria-hidden="true">
+  <div class="gadget gadget--pistol" aria-hidden="true">
     <div class="gadget__pivot">
       <model-viewer src="38_special_revolver.glb" alt="3D revolver model" camera-controls disable-zoom interaction-prompt="none"
         ar-modes="webxr scene-viewer quick-look" shadow-intensity="1" exposure="1.05"></model-viewer>
@@ -140,7 +143,7 @@
     </div>
   </div>
 
-  <div class="gadget flashlight" aria-hidden="true">
+  <div class="gadget gadget--flashlight" aria-hidden="true">
     <div class="gadget__pivot">
       <model-viewer src="flashlight (1).glb" alt="3D flashlight model" camera-controls disable-zoom interaction-prompt="none"
         ar-modes="webxr scene-viewer quick-look" shadow-intensity="1" exposure="1.05"></model-viewer>
@@ -151,13 +154,13 @@
     </div>
   </div>
 
-  <div class="target-cursor" id="targetCursor" aria-hidden="true">
-    <span class="target-cursor__ring"></span>
-    <span class="target-cursor__cross target-cursor__cross--vertical"></span>
-    <span class="target-cursor__cross target-cursor__cross--horizontal"></span>
-    <span class="target-cursor__dot"></span>
+  <div class="target" id="targetCursor" aria-hidden="true">
+    <span class="target__ring"></span>
+    <span class="target__cross target__cross--vertical"></span>
+    <span class="target__cross target__cross--horizontal"></span>
+    <span class="target__dot"></span>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js" defer></script>
 </body>
 </html>
