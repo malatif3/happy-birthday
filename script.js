@@ -305,7 +305,8 @@ function setupAimFollowers() {
 
   const updateAim = (element, pointerX, pointerY) => {
     if (!element) return;
-    const rect = element.getBoundingClientRect();
+    const pivot = element.querySelector(".gadget__pivot");
+    const rect = (pivot ?? element).getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height * 0.65;
     const angle = Math.atan2(pointerY - centerY, pointerX - centerX);

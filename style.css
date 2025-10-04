@@ -576,63 +576,76 @@ h1 {
 .crossline {
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%) rotate(var(--cross-angle));
-  transform-origin: center;
-  font-weight: 700;
-  font-size: clamp(0.78rem, 1.8vw, 1.1rem);
-  letter-spacing: 0.42em;
+  width: min(130vw, 1400px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translateX(-50%) rotate(var(--cross-angle));
+  font-weight: 800;
+  font-size: clamp(0.78rem, 1.6vw, 1.05rem);
+  letter-spacing: clamp(0.28em, 0.5vw, 0.42em);
   text-transform: uppercase;
-  background: repeating-linear-gradient(135deg, #ffd600 0px, #ffd600 18px, #111 18px, #111 36px);
+  background: repeating-linear-gradient(135deg, #ffd600 0px, #ffd600 16px, #111 16px, #111 32px);
   color: #111;
-  padding: clamp(0.45rem, 1.2vw, 0.75rem) clamp(1.2rem, 3vw, 2rem);
-  border: 3px solid #111;
-  border-radius: 18px;
-  box-shadow:
-    0 16px 30px rgba(0, 0, 0, 0.35),
-    inset 0 0 12px rgba(255, 255, 255, 0.14);
-  min-width: clamp(220px, 32vw, 420px);
+  padding-block: clamp(0.35rem, 0.9vw, 0.55rem);
+  padding-inline: clamp(1.5rem, 4vw, 3rem);
+  border: 2px solid #111;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.35);
   text-align: center;
-  mix-blend-mode: screen;
+  border-radius: clamp(14px, 4vw, 26px);
 }
 
-:root[data-theme="light"] .crossline {
-  mix-blend-mode: multiply;
-}
-
+.crossline::before,
 .crossline::after {
   content: "";
   position: absolute;
-  inset: 10%;
-  border: 2px dashed rgba(0, 0, 0, 0.4);
+  inset: 6%;
+  border: 1px dashed rgba(0, 0, 0, 0.4);
   pointer-events: none;
 }
 
+.crossline::after {
+  inset: 10%;
+}
+
 .crossline--one {
-  --cross-angle: -32deg;
-  top: 78%;
+  --cross-angle: -10deg;
+  top: 70%;
 }
 
 .crossline--two {
-  --cross-angle: 2deg;
+  --cross-angle: 6deg;
   top: 82%;
 }
 
-.crossline--three {
-  --cross-angle: 28deg;
-  top: 86%;
+@media (max-width: 700px) {
+  .crossline {
+    width: 170vw;
+    letter-spacing: 0.24em;
+  }
+
+  .crossline--one {
+    top: 74%;
+  }
+
+  .crossline--two {
+    top: 86%;
+  }
 }
 
 .gadget {
   position: fixed;
-  bottom: clamp(2.8rem, 7vw, 4.5rem);
-  width: clamp(120px, 16vw, 200px);
-  height: clamp(90px, 12vw, 150px);
+  bottom: clamp(2.5rem, 6vw, 4.5rem);
+  width: clamp(220px, 32vw, 420px);
+  height: clamp(160px, 24vw, 320px);
   z-index: 9;
-  pointer-events: none;
   transform-origin: 50% 80%;
   transform: rotate(var(--aim-angle, 0rad));
   transition: transform 0.18s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  align-items: center;
   perspective: 1200px;
   transform-style: preserve-3d;
 }
@@ -643,11 +656,11 @@ h1 {
   height: 100%;
   transform-style: preserve-3d;
   animation: gadgetFloat 7s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .gadget.pistol {
   right: clamp(1.5rem, 6vw, 3rem);
-  transform-origin: 78% 68%;
 }
 
 .gadget.pistol .gadget__pivot {
@@ -656,7 +669,6 @@ h1 {
 
 .gadget.flashlight {
   left: clamp(1.5rem, 6vw, 3rem);
-  transform-origin: 28% 72%;
 }
 
 .gadget.flashlight .gadget__pivot {
@@ -664,178 +676,44 @@ h1 {
   animation-delay: 0.6s;
 }
 
-.pistol__model,
-.flashlight__model {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-  filter: drop-shadow(0 22px 40px rgba(0, 0, 0, 0.55));
-}
-
-.pistol__model {
-  transform: rotateX(18deg) rotateY(-26deg) translateZ(10px);
-}
-
-.pistol__slide {
-  position: absolute;
-  top: 14%;
-  left: 14%;
-  width: 74%;
-  height: 28%;
-  border-radius: 16px;
-  background: linear-gradient(110deg, #0f1321 0%, #1d2336 45%, #323d63 100%);
-  box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.16);
-  transform: translateZ(20px);
-}
-
-.pistol__slide::before,
-.pistol__slide::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-}
-
-.pistol__slide::before {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), transparent 60%);
-  mix-blend-mode: screen;
-}
-
-.pistol__slide::after {
-  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.65));
-  transform: translateZ(-18px);
-}
-
-.pistol__barrel {
-  position: absolute;
-  top: 18%;
-  right: 4%;
-  width: 20%;
-  height: 20%;
-  border-radius: 18px;
-  background: linear-gradient(90deg, #3f4c6b, #1c2335);
-  transform: translateZ(28px);
-  box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.18);
-}
-
-.pistol__barrel::before {
-  content: "";
-  position: absolute;
-  inset: 18% 24%;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.1));
-  transform: translateZ(6px);
-}
-
-.pistol__grip {
-  position: absolute;
-  bottom: 8%;
-  left: 34%;
-  width: 26%;
-  height: 46%;
-  border-radius: 18px 26px 34px 16px;
-  background: linear-gradient(130deg, #3a201a, #7d3f2f);
-  transform: rotateZ(-16deg) translateZ(18px);
-  box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.12);
-}
-
-.pistol__grip::before {
-  content: "";
-  position: absolute;
-  inset: 18% 10%;
-  border-radius: 16px;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.12), rgba(0, 0, 0, 0.6));
-}
-
-.pistol__trigger-guard {
-  position: absolute;
-  bottom: 24%;
-  left: 56%;
-  width: 22%;
-  height: 20%;
-  border-radius: 50%;
-  border: 4px solid rgba(255, 214, 0, 0.9);
-  border-top-color: transparent;
-  border-left-color: transparent;
-  transform: rotateZ(28deg) translateZ(22px);
-  box-shadow: 0 0 12px rgba(255, 214, 0, 0.45);
-}
-
-.flashlight__model {
-  transform: rotateX(26deg) rotateY(28deg) translateZ(12px);
-}
-
-.flashlight__body {
-  position: absolute;
-  bottom: 20%;
-  left: 26%;
-  width: 48%;
-  height: 42%;
-  border-radius: 18px;
-  background: linear-gradient(150deg, #121928, #283552 45%, #3e4c73 100%);
-  box-shadow: inset 0 0 14px rgba(255, 255, 255, 0.14);
-  transform: translateZ(20px);
-}
-
-.flashlight__body::after {
-  content: "";
-  position: absolute;
-  inset: 14% 10%;
-  border-radius: 12px;
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.2), transparent);
-}
-
-.flashlight__head {
-  position: absolute;
-  bottom: 30%;
-  right: 10%;
-  width: 30%;
-  height: 30%;
-  border-radius: 16px;
-  background: linear-gradient(130deg, #ffcf40, #f57c00 65%, #c85a00 100%);
-  transform: translateZ(26px);
-  box-shadow:
-    inset 0 0 12px rgba(255, 255, 255, 0.35),
-    0 0 28px rgba(255, 200, 80, 0.6);
-}
-
-.flashlight__head::before {
-  content: "";
-  position: absolute;
-  inset: 24% 22%;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.9), rgba(255, 214, 0, 0.4));
-  transform: translateZ(6px);
-}
-
-.flashlight__tail {
-  position: absolute;
-  bottom: 24%;
-  left: 8%;
-  width: 18%;
-  height: 24%;
-  border-radius: 20px;
-  background: linear-gradient(150deg, #0e1220, #1f2538);
-  transform: translateZ(16px);
-  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
-}
-
-.flashlight__beam {
-  position: absolute;
-  bottom: 34%;
-  right: -110%;
-  width: 260%;
-  height: 140%;
-  transform-origin: left center;
-  transform: translateZ(4px) rotateY(-16deg) skewX(-8deg);
-  background: radial-gradient(ellipse at left,
-      rgba(255, 240, 180, 0.52) 0%,
-      rgba(255, 210, 90, 0.32) 35%,
-      rgba(255, 175, 0, 0.05) 100%);
-  filter: blur(4px);
-  mix-blend-mode: screen;
-  animation: beamPulse 2.6s ease-in-out infinite;
+.sketchfab-embed-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 24px;
+  box-shadow: 0 24px 42px rgba(0, 0, 0, 0.5);
+  background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.8));
   pointer-events: none;
+}
+
+.sketchfab-embed-wrapper iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+}
+
+.sketchfab-credit {
+  margin: 0;
+  font-size: clamp(0.55rem, 1.2vw, 0.75rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.66);
+  text-align: center;
+  pointer-events: auto;
+}
+
+.sketchfab-credit a {
+  color: var(--accent);
+}
+
+:root[data-theme="light"] .sketchfab-credit {
+  color: rgba(31, 35, 65, 0.72);
+}
+
+:root[data-theme="light"] .sketchfab-credit a {
+  color: var(--accent-strong);
 }
 
 .target-cursor {
@@ -900,23 +778,23 @@ body.is-aiming .target-cursor {
 
 @media (max-width: 620px) {
   .crossline {
-    letter-spacing: 0.32em;
-    font-size: clamp(0.68rem, 3vw, 0.9rem);
+    letter-spacing: 0.22em;
+    font-size: clamp(0.62rem, 3.2vw, 0.82rem);
   }
 
   .crossline--one {
-    --cross-angle: -26deg;
-    top: 80%;
+    --cross-angle: -18deg;
+    top: 76%;
   }
 
-  .crossline--three {
-    --cross-angle: 22deg;
-    top: 88%;
+  .crossline--two {
+    --cross-angle: 10deg;
+    top: 90%;
   }
 
   .gadget {
-    width: clamp(90px, 28vw, 140px);
-    height: clamp(70px, 22vw, 110px);
+    width: clamp(180px, 70vw, 260px);
+    height: clamp(140px, 50vw, 220px);
     bottom: clamp(1.8rem, 12vw, 3rem);
   }
 }
