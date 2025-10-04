@@ -229,15 +229,15 @@ function initAimFollowers() {
   const target = document.getElementById("targetCursor");
   const pistolWrapper = document.querySelector(".gadget--pistol");
   const flashlightWrapper = document.querySelector(".gadget--flashlight");
-  const pistol = pistolWrapper?.querySelector("model-viewer");
-  const flashlight = flashlightWrapper?.querySelector("model-viewer");
+  const pistolPivot = pistolWrapper?.querySelector(".gadget__pivot");
+  const flashlightPivot = flashlightWrapper?.querySelector(".gadget__pivot");
 
-  if (!target || !pistolWrapper || !flashlightWrapper) return;
+  if (!target || !pistolPivot || !flashlightPivot) return;
 
   const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
-  function updateAim(wrapper, x, y) {
-    if (!wrapper) return;
+  function updateAim(wrapper, pivot, x, y) {
+    if (!wrapper || !pivot) return;
     const rect = wrapper.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
@@ -248,15 +248,14 @@ function initAimFollowers() {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
 
-    // Hitung sudut - ini yang harus diperbaiki
     const yaw = (dx / vw) * 60;
     const pitch = (dy / vh) * 40;
 
     const yawClamped = clamp(yaw, -35, 35);
     const pitchClamped = clamp(pitch, -20, 20);
 
-    // Terapkan rotasi ke wrapper
-    wrapper.style.transform = `
+    // Rotasi diterapkan ke PIVOT, bukan wrapper
+    pivot.style.transform = `
       rotateY(${yawClamped.toFixed(2)}deg)
       rotateX(${-pitchClamped.toFixed(2)}deg)
     `;
@@ -266,8 +265,8 @@ function initAimFollowers() {
     const { clientX, clientY } = e;
     target.style.setProperty("--cursor-x", `${clientX}px`);
     target.style.setProperty("--cursor-y", `${clientY}px`);
-    updateAim(pistolWrapper, clientX, clientY);
-    updateAim(flashlightWrapper, clientX, clientY);
+    updateAim(pistolWrapper, pistolPivot, clientX, clientY);
+    updateAim(flashlightWrapper, flashlightPivot, clientX, clientY);
   });
 
   document.addEventListener("pointerenter", () => {
