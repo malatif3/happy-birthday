@@ -219,11 +219,13 @@ body {
 }
 
 .slide figcaption {
-  padding: 1.1rem 1.4rem;
-  background: rgba(4, 6, 13, 0.75);
-  color: var(--text-soft);
+  padding: 1rem;
   font-size: 0.95rem;
-  backdrop-filter: blur(12px);
+  line-height: 1.4;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255,255,255,0.1);
 }
 
 .slider-nav,
