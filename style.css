@@ -183,13 +183,14 @@ body {
   padding: 3.5rem 0;
 }
 
-.slides {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: clamp(260px, 45vw, 420px);
-  perspective: 1400px;
+.slide__image {
+  width: 100%;
+  height: auto; /* biar proporsional dengan width */
+  border-radius: 16px;
+  display: block;
+  object-fit: cover;
+  aspect-ratio: 4 / 3; /* bikin rasio stabil dan rapi */
+  max-height: 420px; /* batas maksimum */
 }
 
 .slide {
