@@ -187,22 +187,24 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: clamp(220px, 60vw, 420px);
+  width: clamp(220px, 45vw, 380px); /* sedikit lebih kecil biar nggak terlalu tinggi */
   transform: translate(-50%, -50%);
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
   background: rgba(0, 0, 0, 0.35);
-  transition: all 0.5s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .slide__image {
   width: 100%;
-  aspect-ratio: 1 / 1; /* ✅ bikin jadi persegi */
-  object-fit: cover; /* biar tetap crop rapi, gak gepeng */
-  border-radius: 20px;
+  aspect-ratio: 1 / 1; /* Persegi */
+  object-fit: cover;
+  border-radius: 16px 16px 0 0; /* hanya atas biar menyatu dgn caption */
   display: block;
-  margin: 0 auto;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
