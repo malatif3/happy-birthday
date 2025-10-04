@@ -1,94 +1,174 @@
+// =========================
+//  CONFIG & CONSTANTS
+// =========================
 const INTRO_TEXT = "Setiap misi sudah kamu jalani—malam ini kita rayakan semua kemenanganmu.";
 const BIRTH_ISO = "1974-10-04T00:00:00-07:00";
 const TIME_ZONE = "America/Los_Angeles";
+
 const NUMBER_FORMAT = new Intl.NumberFormat("en-US");
 const ZONE_PARTS_FORMAT = new Intl.DateTimeFormat("sv-SE", {
   timeZone: TIME_ZONE,
-  year: "numeric", month: "2-digit", day: "2-digit",
-  hour: "2-digit", minute: "2-digit", second: "2-digit",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
   hour12: false
 });
 const BIRTH_FORMAT = new Intl.DateTimeFormat("id-ID", {
   timeZone: TIME_ZONE,
-  year: "numeric", month: "long", day: "numeric",
-  hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: false
 });
 
-const birthParts = { year: 1974, month: 10, day: 4 };
+const birthParts = { year: 1974, month: 10, day: 4, hour: 0, minute: 0, second: 0 };
+const birthUTC = new Date(BIRTH_ISO).getTime();
 
+
+// =========================
+//  INTRO TYPING ANIMATION
+// =========================
 function typeIntro() {
-  const t = document.getElementById("typing");
-  if (!t) return;
-  let i = 0;
-  const loop = () => {
-    if (i < INTRO_TEXT.length) {
-      t.textContent += INTRO_TEXT.charAt(i);
-      i++;
-      setTimeout(loop, 70);
-    }
+  const target = document.getElementById("typing");
+  if (!target) return;
+  target.textContent = "";
+  let index = 0;
+
+  const step = () => {
+    if (index >= INTRO_TEXT.length) return;
+    target.textContent += INTRO_TEXT.charAt(index);
+    index++;
+    setTimeout(step, 70);
   };
-  loop();
+
+  step();
 }
 
-function getZoneParts(d = new Date()) {
-  const f = ZONE_PARTS_FORMAT.format(d);
-  const [dp, tp] = f.split(" ");
-  const [y, m, da] = dp.split("-").map(Number);
-  const [h, mi, s] = tp.split(":").map(Number);
-  return { year: y, month: m, day: da, hour: h, minute: mi, second: s };
+
+// =========================
+//  TIME & DATE FUNCTIONS
+// =========================
+function getZoneParts(date = new Date()) {
+  const formatted = ZONE_PARTS_FORMAT.format(date);
+  const [datePart, timePart] = formatted.split(/\s+/);
+  if (!timePart) return {};
+  const [year, month, day] = datePart.split("-").map(Number);
+  const [hour, minute, second] = timePart.split(":").map(Number);
+  return { year, month, day, hour, minute, second };
+}
+
+function updateBirthDisplay() {
+  const el = document.getElementById("birthTime");
+  if (!el) return;
+  const formatted = BIRTH_FORMAT.format(new Date(BIRTH_ISO));
+  el.textContent = formatted;
+  el.setAttribute("datetime", BIRTH_ISO);
 }
 
 function updateZoneClock() {
-  const el = document.getElementById("zoneClock");
-  if (!el) return;
-  const p = getZoneParts();
-  el.textContent = `${String(p.hour).padStart(2,"0")}:${String(p.minute).padStart(2,"0")}:${String(p.second).padStart(2,"0")}`;
+  const clock = document.getElementById("zoneClock");
+  if (!clock) return;
+  const parts = getZoneParts();
+  const pad = (v) => String(v).padStart(2, "0");
+  clock.textContent = `${pad(parts.hour)}:${pad(parts.minute)}:${pad(parts.second)}`;
 }
 
 function updateElapsed() {
-  const p = getZoneParts();
-  let y = p.year - birthParts.year;
-  let m = p.month - birthParts.month;
-  let d = p.day - birthParts.day;
-  if (d < 0) { m--; d += new Date(p.year, p.month - 1, 0).getDate(); }
-  if (m < 0) { y--; m += 12; }
-  const vals = { years: y, months: m, days: d, hours: p.hour, minutes: p.minute, seconds: p.second };
-  for (const [k,v] of Object.entries(vals)) {
-    const e = document.getElementById(k);
-    if (e) e.textContent = NUMBER_FORMAT.format(v);
+  const parts = getZoneParts();
+  if (!parts.year) return;
+
+  let years = parts.year - birthParts.year;
+  let months = parts.month - birthParts.month;
+  let days = parts.day - birthParts.day;
+
+  if (days < 0) {
+    months -= 1;
+    const prevDays = new Date(parts.year, parts.month - 1, 0).getDate();
+    days += prevDays;
   }
+  if (months < 0) {
+    years -= 1;
+    months += 12;
+  }
+
+  const anchor = new Date(Date.UTC(birthParts.year, birthParts.month - 1, birthParts.day));
+  anchor.setUTCFullYear(anchor.getUTCFullYear() + years);
+  anchor.setUTCMonth(anchor.getUTCMonth() + months);
+  anchor.setUTCDate(anchor.getUTCDate() + days);
+
+  const now = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second);
+  let diff = Math.max(0, now - anchor.getTime());
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  diff -= hours * 60 * 60 * 1000;
+  const minutes = Math.floor(diff / (1000 * 60));
+  diff -= minutes * 60 * 1000;
+  const seconds = Math.floor(diff / 1000);
+
+  const values = { years, months, days, hours, minutes, seconds };
+  Object.entries(values).forEach(([key, val]) => {
+    const el = document.getElementById(key);
+    if (el) el.textContent = NUMBER_FORMAT.format(val);
+  });
 }
 
-/* Slider */
+
+// =========================
+//  SLIDER / GALLERY
+// =========================
 function initSlider() {
-  const slides = [...document.querySelectorAll(".slide")];
+  const slides = Array.from(document.querySelectorAll(".slide"));
   if (!slides.length) return;
-  let current = 0;
-  const prev = document.querySelector(".slider-control--prev");
-  const next = document.querySelector(".slider-control--next");
 
-  function arrange() {
-    const c = document.querySelector(".slides-window");
-    const w = c ? c.getBoundingClientRect().width : innerWidth;
-    const shift = Math.min(w / 2.2, 240);
-    slides.forEach((s, i) => {
-      let off = i - current;
+  const prevButton = document.querySelector(".slider-control--prev");
+  const nextButton = document.querySelector(".slider-control--next");
+  let current = 0;
+
+  const arrange = () => {
+    const container = document.querySelector(".slides-window");
+    const containerWidth = container ? container.getBoundingClientRect().width : window.innerWidth;
+    const baseShift = Math.min(containerWidth / 2.2, 240);
+
+    slides.forEach((slide, index) => {
+      let offset = index - current;
       const half = Math.floor(slides.length / 2);
-      if (off > half) off -= slides.length;
-      if (off < -half) off += slides.length;
-      const abs = Math.abs(off);
-      s.style.transform = `translate(-50%, -50%) translateX(${off * shift}px) scale(${Math.max(0.65, 1 - abs*0.18)})`;
-      s.style.opacity = abs > 2 ? 0 : 1 - abs * 0.3;
-      s.classList.toggle("is-active", off === 0);
+      if (offset > half) offset -= slides.length;
+      if (offset < -half) offset += slides.length;
+
+      const abs = Math.abs(offset);
+      const translateX = offset * baseShift;
+      const rotateY = offset * -8;
+      const scale = Math.max(0.65, 1 - abs * 0.18);
+      const depthOpacity = abs > 2 ? 0 : Math.max(0.35, 1 - abs * 0.25);
+
+      slide.style.transform = `translate(-50%, -50%) translateX(${translateX}px) rotateY(${rotateY}deg) scale(${scale})`;
+      slide.style.zIndex = slides.length - abs;
+      slide.style.opacity = depthOpacity;
+      slide.classList.toggle("is-active", offset === 0);
     });
-  }
-  prev.onclick = () => (current = (current - 1 + slides.length) % slides.length, arrange());
-  next.onclick = () => (current = (current + 1) % slides.length, arrange());
+  };
+
+  const goTo = (index) => {
+    current = (index + slides.length) % slides.length;
+    arrange();
+  };
+
+  prevButton?.addEventListener("click", () => goTo(current - 1));
+  nextButton?.addEventListener("click", () => goTo(current + 1));
+
+  window.addEventListener("resize", arrange);
   arrange();
-  addEventListener("resize", arrange);
 }
 
-/* Sparkles */
+
+// =========================
+//  SPARKLE EFFECT
+// =========================
 function createSparkle(x, y) {
   const s = document.createElement("span");
   s.className = "sparkle";
@@ -107,39 +187,41 @@ function initSparkles() {
   let last = 0;
   document.addEventListener("pointermove", (e) => {
     const now = performance.now();
-    if (now - last < 100) return;
+    if (now - last < 120) return;
     if (Math.random() < 0.6) createSparkle(e.clientX, e.clientY);
     last = now;
   });
 }
 
-/* Reveal animation */
+
+// =========================
+//  REVEAL ON SCROLL
+// =========================
 function initReveal() {
   const els = document.querySelectorAll("[data-reveal]");
   if (!els.length) return;
 
   els.forEach((el, i) => {
-    const delay = i * 0.05 + Math.random() * 0.18;
-    el.style.setProperty("--reveal-delay", `${delay.toFixed(2)}s`);
-    el.style.setProperty("--reveal-translate", `${(24 + Math.random() * 16).toFixed(2)}px`);
+    const d = i * 0.05 + Math.random() * 0.18;
+    el.style.setProperty("--reveal-delay", `${d.toFixed(2)}s`);
+    el.style.setProperty("--reveal-translate", `${(32 + Math.random() * 24).toFixed(2)}px`);
   });
 
-  const observer = new IntersectionObserver(
-    (entries, obs) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-revealed");
-          obs.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.2 }
-  );
-
-  els.forEach((el) => observer.observe(el));
+  const io = new IntersectionObserver((entries, obs) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-revealed");
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  els.forEach((el) => io.observe(el));
 }
 
-/* Aim / Crosshair followers */
+
+// =========================
+//  AIM FOLLOWERS (3D GADGETS + CROSSHAIR)
+// =========================
 function initAimFollowers() {
   const target = document.getElementById("targetCursor");
   const pistol = document.querySelector(".gadget--pistol");
@@ -149,7 +231,7 @@ function initAimFollowers() {
   const toDeg = 180 / Math.PI;
   const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
 
-  function updateAim(el, x, y) {
+  const updateAim = (el, x, y) => {
     if (!el) return;
     const pivot = el.querySelector(".gadget__pivot");
     const rect = (pivot ?? el).getBoundingClientRect();
@@ -157,15 +239,14 @@ function initAimFollowers() {
     const cy = rect.top + rect.height / 2;
     const dx = x - cx;
     const dy = y - cy;
-    const vw = innerWidth;
-    const vh = innerHeight;
+    const vw = window.innerWidth, vh = window.innerHeight;
     const yaw = clamp(Math.atan2(dx, vw * 0.38) * toDeg, -55, 55);
     const pitch = clamp(Math.atan2(-dy, vh * 0.42) * toDeg, -38, 42);
     const roll = clamp(Math.atan2(dx, vw * 0.85) * toDeg * 0.6, -18, 18);
     el.style.setProperty("--aim-yaw", `${yaw}deg`);
     el.style.setProperty("--aim-pitch", `${pitch}deg`);
     el.style.setProperty("--aim-roll", `${roll}deg`);
-  }
+  };
 
   document.addEventListener("pointermove", (e) => {
     target?.style.setProperty("--cursor-x", `${e.clientX}px`);
@@ -175,25 +256,26 @@ function initAimFollowers() {
     document.body.classList.add("is-aiming");
   });
 
-  document.addEventListener("pointerleave", () => {
-    document.body.classList.remove("is-aiming");
-  });
+  document.addEventListener("pointerleave", () => document.body.classList.remove("is-aiming"));
 }
 
-/* Balloons */
+
+// =========================
+//  BALLOONS + BURST
+// =========================
 function createBurst(x, y, color) {
-  const burst = document.createElement("div");
-  burst.className = "burst";
-  burst.style.left = `${x}px`;
-  burst.style.top = `${y}px`;
+  const b = document.createElement("div");
+  b.className = "burst";
+  b.style.left = `${x}px`;
+  b.style.top = `${y}px`;
   for (let i = 0; i < 8; i++) {
     const shard = document.createElement("span");
     shard.style.transform = `translate(-50%, -50%) rotate(${(360 / 8) * i}deg)`;
     shard.style.background = color;
-    burst.appendChild(shard);
+    b.appendChild(shard);
   }
-  document.body.appendChild(burst);
-  setTimeout(() => burst.remove(), 450);
+  document.body.appendChild(b);
+  setTimeout(() => b.remove(), 450);
 }
 
 function spawnBalloon() {
@@ -205,10 +287,8 @@ function spawnBalloon() {
   el.style.height = `${size * 1.35}px`;
   el.style.left = `${Math.random() * 100}vw`;
   el.style.animationDuration = `${12 + Math.random() * 8}s`;
-  el.style.background = `radial-gradient(circle at 30% 25%, rgba(255,255,255,0.7),
-    hsla(${hue}, 90%, 65%, 0.95) 55%, hsla(${hue}, 90%, 55%, 0.95))`;
+  el.style.background = `radial-gradient(circle at 30% 25%, rgba(255,255,255,0.7), hsla(${hue}, 90%, 65%, 0.95) 55%, hsla(${hue}, 90%, 55%, 0.95))`;
   document.body.appendChild(el);
-
   const remove = setTimeout(() => el.remove(), 16000);
   el.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -222,13 +302,16 @@ function spawnBalloon() {
 
 function initBalloons() {
   const loop = () => {
-    if (document.querySelectorAll(".balloon").length < 8) spawnBalloon();
-    setTimeout(loop, 1500 + Math.random() * 2000);
+    spawnBalloon();
+    setTimeout(loop, 1500 + Math.random() * 1800);
   };
   loop();
 }
 
-/* Theme toggle */
+
+// =========================
+//  THEME TOGGLE
+// =========================
 function initThemeToggle() {
   const btn = document.querySelector("[data-theme-toggle]");
   if (!btn) return;
@@ -236,7 +319,6 @@ function initThemeToggle() {
   const icon = btn.querySelector(".theme-toggle__icon");
   const label = btn.querySelector(".theme-toggle__label");
   const key = "hb-theme";
-
   const apply = (t) => {
     const mode = t === "light" ? "light" : "dark";
     root.dataset.theme = mode;
@@ -244,14 +326,14 @@ function initThemeToggle() {
     if (icon) icon.textContent = mode === "light" ? "☀️" : "🌙";
     if (label) label.textContent = mode === "light" ? "Light" : "Dark";
   };
-
   apply(localStorage.getItem(key) || "dark");
-  btn.addEventListener("click", () =>
-    apply(root.dataset.theme === "dark" ? "light" : "dark")
-  );
+  btn.addEventListener("click", () => apply(root.dataset.theme === "dark" ? "light" : "dark"));
 }
 
-/* Fireworks / Confetti */
+
+// =========================
+//  FIREWORKS + CONFETTI
+// =========================
 function initFireworks(canvas, ctx, confetti, fireworks) {
   function makeConfetti() {
     confetti.length = 0;
@@ -289,7 +371,6 @@ function initFireworks(canvas, ctx, confetti, fireworks) {
       ctx.fill();
       if (f.alpha <= 0) fireworks.splice(i, 1);
     });
-
     ctx.globalAlpha = 1;
     requestAnimationFrame(draw);
   }
@@ -298,7 +379,7 @@ function initFireworks(canvas, ctx, confetti, fireworks) {
   canvas.height = innerHeight;
   makeConfetti();
 
-  addEventListener("resize", () => {
+  window.addEventListener("resize", () => {
     canvas.width = innerWidth;
     canvas.height = innerHeight;
     makeConfetti();
@@ -306,7 +387,7 @@ function initFireworks(canvas, ctx, confetti, fireworks) {
 
   document.addEventListener("click", (e) => {
     if (e.target.closest("button,.slide,.slider-control,.paper-note__sheet,.balloon")) return;
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 30; i++)
       fireworks.push({
         x: e.clientX,
         y: e.clientY,
@@ -315,15 +396,18 @@ function initFireworks(canvas, ctx, confetti, fireworks) {
         alpha: 1,
         color: ["#ffc857", "#ff5f6d", "#43e5f7", "#c084fc"][Math.floor(Math.random() * 4)]
       });
-    }
   });
 
   draw();
 }
 
-/* === INIT === */
+
+// =========================
+//  INIT ALL ON LOAD
+// =========================
 window.addEventListener("DOMContentLoaded", () => {
   typeIntro();
+  updateBirthDisplay();
   updateZoneClock();
   updateElapsed();
   setInterval(updateZoneClock, 1000);
@@ -332,8 +416,8 @@ window.addEventListener("DOMContentLoaded", () => {
   initSparkles();
   initReveal();
   initAimFollowers();
-  initBalloons();
   initThemeToggle();
+  initBalloons();
 
   const canvas = document.getElementById("confetti");
   const ctx = canvas?.getContext("2d");
