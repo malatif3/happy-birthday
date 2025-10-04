@@ -183,22 +183,28 @@ body {
   padding: 3.5rem 0;
 }
 
-.slides {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 380px; /* bukan vw biar stabil */
+.slide {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(220px, 60vw, 420px);
+  transform: translate(-50%, -50%);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.35);
+  transition: all 0.5s ease;
 }
 
 .slide__image {
   width: 100%;
-  height: auto; /* biar proporsional dengan width */
+  height: auto; /* biar proporsional */
+  max-height: 400px; /* batas agar tidak kepanjangan */
+  object-fit: cover;
   border-radius: 16px;
   display: block;
-  object-fit: cover;
-  aspect-ratio: 4 / 3; /* bikin rasio stabil dan rapi */
-  max-height: 420px; /* batas maksimum */
+  margin: 0 auto;
+  aspect-ratio: 4 / 3; /* bisa ubah ke 3/4 jika fotonya portrait */
 }
 
 .slide.is-active {
