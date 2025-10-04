@@ -229,50 +229,47 @@ function initAimFollowers() {
   const target = document.getElementById("targetCursor");
   const pistolWrapper = document.querySelector(".gadget--pistol");
   const flashlightWrapper = document.querySelector(".gadget--flashlight");
-  const pistolPivot = pistolWrapper?.querySelector(".gadget__pivot");
-  const flashlightPivot = flashlightWrapper?.querySelector(".gadget__pivot");
+  const pistol = pistolWrapper?.querySelector("model-viewer");
+  const flashlight = flashlightWrapper?.querySelector("model-viewer");
 
-  if (!target || !pistolPivot || !flashlightPivot) return;
+  if (!target || !pistol || !flashlight) return;
 
+  const toDeg = 180 / Math.PI;
   const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
-  function updateAim(wrapper, pivot, x, y) {
-    if (!wrapper || !pivot) return;
-    const rect = wrapper.getBoundingClientRect();
+  function updateAim(model, x, y) {
+    if (!model) return;
+    const rect = model.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
 
+    // Selisih posisi kursor dari tengah objek
     const dx = x - cx;
     const dy = y - cy;
 
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
+    // Hitung sudut menggunakan atan2 untuk "look-at" effect
+    const yaw = Math.atan2(dx, 300) * toDeg;      // Horizontal (kanan/kiri)
+    const pitch = Math.atan2(-dy, 300) * toDeg;   // Vertikal (atas/bawah)
 
-    const yaw = (dx / vw) * 60;
-    const pitch = (dy / vh) * 40;
+    // Batasi rotasi
+    const yawClamped = clamp(yaw, -60, 60);
+    const pitchClamped = clamp(pitch, -30, 30);
 
-    const yawClamped = clamp(yaw, -35, 35);
-    const pitchClamped = clamp(pitch, -20, 20);
-
-    // Rotasi diterapkan ke PIVOT, bukan wrapper
-    pivot.style.transform = `
-      rotateY(${yawClamped.toFixed(2)}deg)
-      rotateX(${-pitchClamped.toFixed(2)}deg)
-    `;
+    // Set orientasi: "pitch yaw roll"
+    model.orientation = `0deg ${pitchClamped.toFixed(2)}deg ${-yawClamped.toFixed(2)}deg`;
   }
 
   document.addEventListener("pointermove", (e) => {
     const { clientX, clientY } = e;
     target.style.setProperty("--cursor-x", `${clientX}px`);
     target.style.setProperty("--cursor-y", `${clientY}px`);
-    updateAim(pistolWrapper, pistolPivot, clientX, clientY);
-    updateAim(flashlightWrapper, flashlightPivot, clientX, clientY);
+    updateAim(pistol, clientX, clientY);
+    updateAim(flashlight, clientX, clientY);
   });
 
   document.addEventListener("pointerenter", () => {
     document.body.classList.add("is-aiming");
   });
-  
   document.addEventListener("pointerleave", () => {
     document.body.classList.remove("is-aiming");
   });
