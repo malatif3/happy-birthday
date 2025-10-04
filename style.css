@@ -64,6 +64,7 @@ body {
   overflow-x: hidden;
   position: relative;
   cursor: none;
+  overflow-x: hidden;
 }
 
 /* =========================
@@ -492,7 +493,7 @@ body {
   bottom: clamp(2.4rem, vw, 4.8rem);
   width: clamp(220px, 60vw, 420px);
   height: clamp(160px, 60vw, 320px);
-  z-index: 8;
+  z-index: 10;
   transform-style: preserve-3d;
   perspective: 800px;
   transform-origin: center bottom;
@@ -538,6 +539,10 @@ model-viewer {
   transform: translate(-50%, -50%);
   z-index: 20;
   transition: opacity 0.25s ease-out;
+}
+
+:root[data-theme="light"] .target__ring {
+  background: rgba(0, 0, 0, 0.568);
 }
 
 body:not(.is-aiming) .flashlight {
@@ -664,7 +669,8 @@ body.is-aiming .target {
   background: radial-gradient(circle, rgba(255, 200, 87, 1) 0%, rgba(255, 95, 109, 0.85) 70%, transparent 100%);
   pointer-events: none;
   animation: sparkleFade 0.6s ease forwards;
-  z-index: 11;
+  z-index: 0;
+  opacity: 0.5;
 }
 
 .balloon {
@@ -673,7 +679,7 @@ body.is-aiming .target {
   border-radius: 50%;
   animation: floatUp linear forwards;
   cursor: pointer;
-  z-index: 999;
+  z-index: 11;
 }
 
 .balloon::after {
@@ -684,6 +690,10 @@ body.is-aiming .target {
   width: 2px;
   height: 42px;
   background: rgba(255, 255, 255, 0.35);
+}
+
+:root[data-theme="light"] .balloon::after {
+  background: rgba(0, 0, 0, 0.25);
 }
 
 .balloon.popped {

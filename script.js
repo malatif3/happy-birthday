@@ -212,7 +212,7 @@ function initSlider() {
 function createSparkle(x, y) {
   const s = document.createElement("span");
   s.className = "sparkle";
-  const size = 6 + Math.random() * 8;
+  const size = 4 + Math.random() * 6;
   const hue = Math.floor(Math.random() * 360);
   Object.assign(s.style, {
     width: `${size}px`,
@@ -226,15 +226,16 @@ function createSparkle(x, y) {
 }
 
 function initSparkles() {
-  let last = 0;
-  document.addEventListener("pointermove", (e) => {
-    const now = performance.now();
-    if (now - last < 120) return;
-    if (Math.random() < 0.6) createSparkle(e.clientX, e.clientY);
-    last = now;
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("button,.slider-control,.balloon,.paper-note__sheet")) return;
+
+    for (let i = 0; i < 5; i++) {
+      const offsetX = (Math.random() - 0.5) * 60;
+      const offsetY = (Math.random() - 0.5) * 60;
+      createSparkle(e.clientX + offsetX, e.clientY + offsetY);
+    }
   });
 }
-
 // =========================
 //  DNA RAIN EFFECT
 // =========================
@@ -370,14 +371,14 @@ function createBurst(x, y, color) {
   setTimeout(() => b.remove(), 500);
 
   // ✨ sparkle tambahan
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 10; i++) {
     const sparkle = document.createElement("span");
     sparkle.className = "sparkle";
     const angle = Math.random() * 2 * Math.PI;
     const radius = Math.random() * 40;
     sparkle.style.left = `${x + Math.cos(angle) * radius}px`;
     sparkle.style.top = `${y + Math.sin(angle) * radius}px`;
-    sparkle.style.width = `${6 + Math.random() * 6}px`;
+    sparkle.style.width = `${4 + Math.random() * 6}px`;
     sparkle.style.height = sparkle.style.width;
     document.body.appendChild(sparkle);
     setTimeout(() => sparkle.remove(), 700 + Math.random() * 300);
@@ -615,6 +616,10 @@ function initAutoReload() {
 // =========================
 function showLogo(x, y, src = "pictures/fingerprint.png") {
   const img = document.createElement("img");
+  
+  tapSound.currentTime = 0;
+  tapSound.play();
+
   img.src = src;
   img.alt = "special logo";
   img.className = "floating-logo";
@@ -635,9 +640,6 @@ function initLogoTrigger() {
 
   // klik di foto aktif (utama)
   document.querySelector(".photo-slider")?.addEventListener("click", (e) => {
-    tapSound.currentTime = 0;
-    tapSound.play();
-
     const activeSlide = document.querySelector(".slide.is-active img");
     if (activeSlide && e.target === activeSlide) {
       showLogo(e.clientX, e.clientY);
