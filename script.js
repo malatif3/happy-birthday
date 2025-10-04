@@ -240,19 +240,15 @@ function initAimFollowers() {
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
 
-  // Selisih posisi kursor dari tengah objek
   const dx = x - cx;
   const dy = y - cy;
 
-  // Hitung sudut menggunakan atan2 untuk "look-at" effect
-  const yaw = Math.atan2(dx, 300) * toDeg;      // Horizontal (kanan/kiri)
-  const pitch = Math.atan2(-dy, 300) * toDeg;   // Vertikal (atas/bawah)
+  const yaw = Math.atan2(dx, 300) * toDeg;
+  const pitch = Math.atan2(-dy, 300) * toDeg;
 
-  // Batasi rotasi
   const yawClamped = clamp(yaw, -60, 60);
   const pitchClamped = clamp(pitch, -30, 30);
 
-  // Set orientasi: "pitch yaw roll"
   model.orientation = `${pitchClamped.toFixed(2)}deg ${yawClamped.toFixed(2)}deg 0deg`;
 }
 
