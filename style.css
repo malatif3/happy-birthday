@@ -154,10 +154,6 @@ body {
   }
 }
 
-p {
-  text-align: center;
-}
-
 .hero h1 {
   margin: 0;
   font-size: clamp(2.6rem, 8vw, 4rem);
@@ -166,6 +162,12 @@ p {
   text-shadow: 0 0 18px rgba(255, 200, 87, 0.6);
   background: transparent;
   border: none;
+}
+
+.hero h1:hover {
+  text-shadow: 0 0 24px rgba(255, 200, 87, 0.85);
+  transition: all 0.5s ease;
+  font-weight: 2000;
 }
 
 .hero__subtitle {
@@ -189,9 +191,10 @@ p {
 .time-card__timestamp,
 .timezone-clock {
   color: var(--text-soft);
-  font-size: 0.9rem;
+  font-size: 1rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: var(--accent);
 }
 
 .time-card__timestamp time {
@@ -203,6 +206,12 @@ p {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: clamp(0.75rem, 2vw, 1.1rem);
+}
+
+.time-unit:hover{
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+  height: 105%;
+  transition: all 0.5s ease;
 }
 
 .time-unit {
@@ -281,6 +290,12 @@ p {
   cursor: pointer;
 }
 
+.slide:hover {
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+  height: 90%;
+  transition: all 0.5s ease;
+}
+
 /* Slide aktif - di depan, centered */
 .slide.is-active {
   transform: translate(-50%, -50%) scale(1);
@@ -328,7 +343,7 @@ p {
   padding: 1rem 1.4rem;
   background: rgba(4, 6, 13, 0.85);
   color: var(--text-soft);
-  font-size: 0.95rem;
+  font-size: 1rem;
   backdrop-filter: blur(12px);
   border-radius: 0 0 20px 20px;
   user-select: none;
@@ -375,6 +390,10 @@ p {
   justify-content: center;
 }
 
+.paper-note__sheet:hover {
+  height: 105%;
+}
+
 .paper-note__sheet {
   position: relative;
   width: min(680px, 100%);
@@ -386,12 +405,51 @@ p {
   box-shadow: var(--shadow-xl);
   line-height: 1.75;
   transform: rotate(-1.2deg);
+  text-align: left;
 }
 
 .paper-note__signature {
   margin-top: 1.4rem;
   font-weight: bold;
   letter-spacing: 0.08em;
+}
+
+/* =========================
+   FLOATING LOGO EFFECT
+========================= */
+.floating-logo {
+  position: fixed;
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  z-index: 999;
+  transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+  filter: drop-shadow(0 0 10px rgba(255,255,255,0.6));
+  animation: logoPop 1.8s ease-out forwards;
+}
+
+@keyframes logoPop {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  15% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+  40% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0;
+  }
 }
 
 /* =========================
@@ -411,12 +469,13 @@ p {
 .tape__strip {
   display: block;
   width: 100vw;
-  padding: 0.7rem 2.8rem;
-  background: repeating-linear-gradient(135deg, #ffef5c 0px, #ffef5c 18px, #141414 18px, #141414 32px);
+  padding: 0.2rem 2.8rem;
+  background: #ffef5c;
   color: #141414;
-  font-weight: 700;
-  letter-spacing: 0.35em;
-  border-radius: 14px;
+  font-weight: 1000;
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+  border: 6px dashed #080808;
   box-shadow: var(--shadow-lg);
   text-align: center;
 }
@@ -430,9 +489,9 @@ p {
 ========================= */
 .gadget {
   position: fixed;
-  bottom: clamp(2.4rem, 6vw, 4.8rem);
-  width: clamp(220px, 32vw, 420px);
-  height: clamp(160px, 26vw, 320px);
+  bottom: clamp(2.4rem, vw, 4.8rem);
+  width: clamp(220px, 60vw, 420px);
+  height: clamp(160px, 60vw, 320px);
   z-index: 8;
   transform-style: preserve-3d;
   perspective: 800px;
@@ -475,7 +534,7 @@ model-viewer {
   );
   mix-blend-mode: screen;
   filter: blur(40px);
-  opacity: 0.6;
+  opacity: 1;
   transform: translate(-50%, -50%);
   z-index: 20;
   transition: opacity 0.25s ease-out;
@@ -574,6 +633,25 @@ body.is-aiming .target {
   box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
 }
 
+/* =========================
+   DNA RAIN EFFECT
+========================= */
+.dna {
+  position: fixed;
+  top: -80px;
+  width: 60px;
+  opacity: 0.9;
+  animation: dnaFall 10s linear forwards;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: screen; /* biar warna bercampur dengan latar */
+  filter: brightness(3) contrast(1.2);
+}
+
+@keyframes dnaFall {
+  from { transform: translateY(0) rotate(0deg); opacity: 1; }
+  to { transform: translateY(110vh) rotate(360deg); opacity: 0.8; }
+}
 
 /* =========================
    SPARKLES & BALLOONS
@@ -648,7 +726,13 @@ body.is-aiming .target {
 }
 
 .closing-note {
-  margin-bottom: 100px;
+  margin-bottom: 50px;
+  text-align: center;
+}
+
+#noteTitle {
+  font-size: 1.1rem;
+  font-weight: 500;
 }
 
 /* =========================
@@ -669,7 +753,8 @@ body.is-aiming .target {
 /* efek hover (opsional) */
 .corner-image:hover {
   opacity: 1;
-  transform: translate(0, 0) scale(1.03);
+  height: 110%;
+  transform: translate(0, 0) scale(1.05);
 }
 
 @keyframes burstMove {
@@ -714,6 +799,40 @@ body.is-aiming .target {
   box-shadow: var(--shadow-lg);
   backdrop-filter: blur(18px);
   z-index: 10;
+}
+
+.music-controls {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 20;
+}
+
+.music-controls button {
+  background: rgba(9, 14, 28, 0.55);
+  border: none;
+  border-radius: 50%;
+  color: var(--text);
+  font-size: 1.2rem;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(12px);
+  transition: all 0.25s ease;
+}
+
+.music-controls button:hover {
+  background: rgba(12, 18, 34, 0.8);
+  transform: scale(1.1);
+  transition: all 0.25s ease;
+  border: 1px solid var(--accent);
+}
+
+.music-controls button:active {
+  transform: scale(0.95);
 }
 
 /* =========================

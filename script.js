@@ -30,6 +30,20 @@ const BIRTH_FORMAT = new Intl.DateTimeFormat("id-ID", {
 const birthParts = { year: 1974, month: 10, day: 4, hour: 0, minute: 0, second: 0 };
 const birthUTC = new Date(BIRTH_ISO).getTime();
 
+// =========================
+//  SOUND EFFECTS
+// =========================
+const balloonPop = new Audio("music/balloon-burst.mp3");
+const confettiPop = new Audio("music/shine.mp3");
+const keyboardSound = new Audio("music/keyboard-click.mp3");
+const reloadSound = new Audio("music/caulking-gun-back.mp3");
+const tapSound = new Audio("music/tap.mp3");
+
+balloonPop.volume = 0.5;
+confettiPop.volume = 0.5;
+keyboardSound.volume = 0.5;
+reloadSound.volume = 0.5;
+tapSound.volume = 0.5;
 
 // =========================
 //  INTRO TYPING ANIMATION
@@ -38,14 +52,36 @@ function typeIntro() {
   const target = document.getElementById("typing");
   if (!target) return;
   target.textContent = "";
+  
   let index = 0;
+  let deleting = false;
 
-  const step = () => {
-    if (index >= INTRO_TEXT.length) return;
-    target.textContent += INTRO_TEXT.charAt(index);
-    index++;
-    setTimeout(step, 70);
-  };
+  const speed = 70;         // kecepatan mengetik
+  const pauseBeforeDelete = 2000; // jeda sebelum menghapus (ms)
+  const pauseBeforeType = 600;    // jeda sebelum mengetik lagi (ms)
+
+  function step() {
+    if (!deleting) {
+      // nambah huruf
+      target.textContent = INTRO_TEXT.slice(0, index + 1);
+      index++;
+      if (index === INTRO_TEXT.length) {
+        deleting = true;
+        setTimeout(step, pauseBeforeDelete);
+        return;
+      }
+    } else {
+      // hapus huruf
+      target.textContent = INTRO_TEXT.slice(0, index - 1);
+      index--;
+      if (index === 0) {
+        deleting = false;
+        setTimeout(step, pauseBeforeType);
+        return;
+      }
+    }
+    setTimeout(step, speed);
+  }
 
   step();
 }
@@ -143,6 +179,8 @@ function initSlider() {
 
   // --- Fungsi ganti slide
   const goTo = (index) => {
+    keyboardSound.currentTime = 0;
+    keyboardSound.play();
     current = (index + slides.length) % slides.length;
     arrange();
   };
@@ -155,6 +193,7 @@ function initSlider() {
   slides.forEach((slide) => {
     // biar bisa diklik walau klik di dalam img atau figcaption
     slide.addEventListener("click", (e) => {
+
       const target = e.currentTarget;
       if (target.classList.contains("is-next")) goTo(current + 1);
       else if (target.classList.contains("is-prev")) goTo(current - 1);
@@ -196,6 +235,34 @@ function initSparkles() {
   });
 }
 
+// =========================
+//  DNA RAIN EFFECT
+// =========================
+function spawnDNA() {
+  const dna = document.createElement("img");
+  dna.src = "pictures/dna.png";
+  dna.className = "dna";
+
+  const size = 40 + Math.random() * 40;
+  dna.style.width = `${size}px`;
+  dna.style.left = `${Math.random() * 100}vw`;
+  dna.style.animationDuration = `${8 + Math.random() * 6}s`;
+
+  // bikin warna pelangi lewat shadow
+  const hue = Math.floor(Math.random() * 360);
+  dna.style.filter = `drop-shadow(0 0 8px hsl(${hue}, 100%, 60%)) brightness(2)`;
+
+  document.body.appendChild(dna);
+  setTimeout(() => dna.remove(), 15000);
+}
+
+function initDNARain() {
+  const loop = () => {
+    spawnDNA();
+    setTimeout(loop, 1000 + Math.random() * 3000); // kecepatan spawn
+  };
+  loop();
+}
 
 // =========================
 //  REVEAL ON SCROLL
@@ -221,10 +288,6 @@ function initReveal() {
   els.forEach((el) => io.observe(el));
 }
 
-
-// =========================
-//  AIM FOLLOWERS (3D GADGETS + CROSSHAIR)
-// =========================
 // =========================
 //  AIM FOLLOWERS (3D GADGETS + CROSSHAIR)
 // =========================
@@ -333,11 +396,16 @@ function spawnBalloon() {
   el.style.background = `radial-gradient(circle at 30% 25%, rgba(255,255,255,0.7), hsla(${hue}, 90%, 65%, 0.95) 55%, hsla(${hue}, 90%, 55%, 0.95))`;
   document.body.appendChild(el);
   const remove = setTimeout(() => el.remove(), 16000);
+
   el.addEventListener("click", (e) => {
   e.stopPropagation();
+  
   const rect = el.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
+
+  balloonPop.currentTime = 0; // reset agar bisa main berulang
+  balloonPop.play();
 
   // 💥 Ledakan pecahan balon
   createBurst(cx, cy, `hsla(${hue},95%,70%,1)`);
@@ -363,7 +431,6 @@ function initBalloons() {
   loop();
 }
 
-
 // =========================
 //  THEME TOGGLE
 // =========================
@@ -375,6 +442,10 @@ function initThemeToggle() {
   const label = btn.querySelector(".theme-toggle__label");
   const key = "hb-theme";
   const apply = (t) => {
+
+    keyboardSound.currentTime = 0;
+    keyboardSound.play();
+
     const mode = t === "light" ? "light" : "dark";
     root.dataset.theme = mode;
     localStorage.setItem(key, mode);
@@ -385,6 +456,55 @@ function initThemeToggle() {
   btn.addEventListener("click", () => apply(root.dataset.theme === "dark" ? "light" : "dark"));
 }
 
+// =========================
+//  BACKGROUND MUSIC SYSTEM
+// =========================
+function initMusicPlayer() {
+  const playlist = [
+    "music/happy-birthday.mp3",
+    "music/happy-birthday-rock.mp3",
+    "music/happy-birthday-funk.mp3",
+    "music/happy-birthday-jazz.mp3"
+  ];
+
+  let currentTrack = 0;
+  backgroundAudio = new Audio(playlist[currentTrack]);
+  backgroundAudio.loop = false;
+  backgroundAudio.volume = 0.4;
+
+  const toggleBtn = document.getElementById("musicToggle");
+  const nextBtn = document.getElementById("nextTrack");
+
+  // ✅ Start music only after first click anywhere
+  const startMusic = () => {
+    backgroundAudio.play().catch((err) => {
+      console.warn("Autoplay blocked:", err.message);
+    });
+    document.removeEventListener("click", startMusic);
+  };
+  document.addEventListener("click", startMusic);
+
+  function playNext() {
+    currentTrack = (currentTrack + 1) % playlist.length;
+    backgroundAudio.src = playlist[currentTrack];
+    backgroundAudio.play().catch(() => {});
+  }
+
+  toggleBtn.addEventListener("click", () => {
+    backgroundAudio.muted = !backgroundAudio.muted;
+    toggleBtn.textContent = backgroundAudio.muted ? "🔇" : "🎵";
+    keyboardSound.currentTime = 0;
+    keyboardSound.play();
+  });
+
+  nextBtn.addEventListener("click", () => {
+    keyboardSound.currentTime = 0;
+    keyboardSound.play();
+    playNext();
+  });
+
+  backgroundAudio.addEventListener("ended", playNext);
+}
 
 // =========================
 //  FIREWORKS + CONFETTI
@@ -443,17 +563,93 @@ function initFireworks(canvas, ctx, confetti, fireworks) {
   document.addEventListener("click", (e) => {
     if (e.target.closest("button,.slide,.slider-control,.paper-note__sheet,.balloon")) return;
     for (let i = 0; i < 30; i++)
+
       fireworks.push({
         x: e.clientX,
         y: e.clientY,
         vx: (Math.random() - 0.5) * 6,
         vy: (Math.random() - 0.5) * 6,
+
         alpha: 1,
         color: ["#ffc857", "#ff5f6d", "#43e5f7", "#c084fc"][Math.floor(Math.random() * 4)]
       });
+      
+      confettiPop.currentTime = 0;
+      confettiPop.play();
   });
 
   draw();
+}
+
+// =========================
+//  AUTO RELOAD SOUND EFFECT
+// =========================
+// =========================
+//  AUTO RELOAD SOUND EFFECT
+// =========================
+let backgroundAudio; // referensi global dari musik utama
+
+function initAutoReload() {
+  function playReload() {
+    reloadSound.currentTime = 0;
+    reloadSound.play();
+  }
+
+  const loop = () => {
+    const delay = 5000 + Math.random() * 10000; // 5–15 detik random
+    setTimeout(() => {
+      // hanya mainkan jika musik tidak di-mute
+      if (backgroundAudio && !backgroundAudio.muted) {
+        playReload();
+      }
+      loop(); // ulangi terus
+    }, delay);
+  };
+
+  loop();
+}
+
+
+// =========================
+//  LOGO APPEAR EFFECT
+// =========================
+function showLogo(x, y, src = "pictures/fingerprint.png") {
+  const img = document.createElement("img");
+  img.src = src;
+  img.alt = "special logo";
+  img.className = "floating-logo";
+
+  // Posisi muncul di lokasi klik
+  img.style.left = `${x}px`;
+  img.style.top = `${y}px`;
+
+  document.body.appendChild(img);
+
+  // Hapus otomatis setelah 2 detik
+  setTimeout(() => img.remove(), 2000);
+}
+
+function initLogoTrigger() {
+  const mainPhoto = document.querySelector(".slide.is-active img");
+  const paperNote = document.querySelector(".paper-note__sheet");
+
+  // klik di foto aktif (utama)
+  document.querySelector(".photo-slider")?.addEventListener("click", (e) => {
+    tapSound.currentTime = 0;
+    tapSound.play();
+
+    const activeSlide = document.querySelector(".slide.is-active img");
+    if (activeSlide && e.target === activeSlide) {
+      showLogo(e.clientX, e.clientY);
+    }
+  });
+
+  // klik di kertas note
+  paperNote?.addEventListener("click", (e) => {
+    tapSound.currentTime = 0;
+    tapSound.play();
+    showLogo(e.clientX, e.clientY);
+  });
 }
 
 // =========================
@@ -468,10 +664,14 @@ window.addEventListener("DOMContentLoaded", () => {
   setInterval(updateElapsed, 1000);
   initSlider();
   initSparkles();
+  initDNARain();
   initReveal();
   initAimFollowers();
   initThemeToggle();
+  initMusicPlayer();
   initBalloons();
+  initAutoReload();
+  initLogoTrigger();
 
   const canvas = document.getElementById("confetti");
   const ctx = canvas?.getContext("2d");

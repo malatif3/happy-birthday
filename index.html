@@ -29,6 +29,12 @@
     <span class="theme-toggle__label">Dark</span>
   </button>
 
+  <!-- Music Control -->
+  <div class="music-controls">
+    <button id="musicToggle" aria-label="Toggle Music">🎵</button>
+    <button id="nextTrack" aria-label="Next Song">⏭️</button>
+  </div>
+
   <main class="page" id="top">
     <!-- Hero Section -->
     <header class="hero" data-reveal>
@@ -42,10 +48,10 @@
         <h2 id="timeHeading">It’s been this long since your story began on Earth</h2>
         <p>Let’s count how far you’ve come since your very first day here.</p>
         <p class="time-card__timestamp">
-          Since October 4th, 1974 JacksonVille, Florida
+          Since October 4th, 1974 - JacksonVille, Florida
         </p>
         <p class="timezone-clock" aria-live="polite">
-          Current time in California (GMT -7): <span id="zoneClock">--:--:--</span>
+          Current time in California:<br><span id="zoneClock">--:--:--</span> (GMT -7)
         </p>
       </div>
 
@@ -178,13 +184,13 @@
 
   <!-- Decorative Elements -->
   <div class="tape" aria-hidden="true">
-    <span class="tape__strip tape__strip--one">POLICE CROSS LINE DO NOT CROSS POLICE CROSS LINE DO NOT CROSS</span>
-    <span class="tape__strip tape__strip--two">POLICE CROSS LINE DO NOT CROSS POLICE CROSS LINE DO NOT CROSS</span>
-    <span class="tape__strip tape__strip--three">POLICE CROSS LINE DO NOT CROSS POLICE CROSS LINE DO NOT CROSS</span>
+    <span class="tape__strip tape__strip--one">THERE IS CUTE DAD   DO NOT CROSS THERE IS CUTE DAD   DO NOT CROSS</span>
+    <span class="tape__strip tape__strip--two">THERE IS CUTE DAD   DO NOT CROSS THERE IS CUTE DAD   DO NOT CROSS</span>
+    <span class="tape__strip tape__strip--three">THERE IS CUTE DAD   DO NOT CROSS THERE IS CUTE DAD   DO NOT CROSS</span>
   </div>
 
   <!-- Gadgets -->
-  <div class="gadget gadget--pistol" aria-hidden="true" style="left: 6%; bottom: 6%;">
+  <div class="gadget gadget--pistol" aria-hidden="true" style="left: -100px; bottom: -100px;">
     <div class="gadget__pivot">
       <model-viewer
         src="models/revolver.glb"
@@ -198,7 +204,7 @@
     </div>
   </div>
 
-  <div class="gadget gadget--flashlight" aria-hidden="true" style="right: 6%; bottom: 6%;">
+  <div class="gadget gadget--flashlight" aria-hidden="true" style="right: -100px; bottom: -100px;">
     <div class="gadget__pivot">
       <model-viewer
         src="models/flashlight.glb"
@@ -211,7 +217,7 @@
       ></model-viewer>
     </div>
   </div>
-
+  
   <img src="pictures/foto13.png" alt="Andy leaned over" class="corner-image" />
 
   <!-- Target Crosshair -->
