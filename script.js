@@ -239,22 +239,25 @@ function initAimFollowers() {
   const rect = model.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
+
+  // selisih posisi kursor dari tengah layar
   const dx = x - cx;
   const dy = y - cy;
 
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  // sudut relatif berdasarkan posisi pointer
-  const yaw = ((dx / vw) * 120);   // kiri–kanan (Y axis)
-  const pitch = ((dy / vh) * 90);  // atas–bawah (X axis)
+  // arah yaw: gerak horizontal (kanan–kiri)
+  // arah pitch: gerak vertikal (atas–bawah)
+  const yaw = (dx / vw) * 120;       // kanan positif, kiri negatif
+  const pitch = (dy / vh) * 90;      // bawah positif, atas negatif
 
-  // batasi biar gak ekstrim
+  // batasi rotasi biar gak ekstrem
   const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
   const yawClamped = clamp(yaw, -60, 60);
   const pitchClamped = clamp(pitch, -30, 30);
 
-  // Model-viewer pakai urutan X Y Z (pitch yaw roll)
+  // orientasi model-viewer: X = pitch, Y = yaw, Z = roll
   model.orientation = `${-pitchClamped.toFixed(2)}deg ${yawClamped.toFixed(2)}deg 0deg`;
 }
 
