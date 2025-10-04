@@ -3,28 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Happy Ballistic Birthday 🎉</title>
+  <title>Happy Birthday my best man, Andy</title>
   <link rel="stylesheet" href="style.css">
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </head>
 <body>
   <canvas id="confetti"></canvas>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false"
+    aria-label="Toggle light and dark mode">
+    <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
+    <span class="theme-toggle__label">Dark</span>
+  </button>
   <div class="ballistic-wrapper">
     <header data-reveal>
-      <div class="header-bar">
-        <h1>🎯 Happy Ballistic Birthday!</h1>
-        <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Toggle light and dark mode">
-          <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
-          <span class="theme-toggle__label">Dark</span>
-        </button>
-      </div>
+      <h1>Happy Birthday my best man, Andy</h1>
       <p id="typing" aria-live="polite"></p>
     </header>
 
     <section class="time-card" aria-labelledby="timeHeading" data-reveal>
       <div class="time-card__header">
-        <h2 id="timeHeading">Time Since October 4, 1974 (California, GMT-7)</h2>
-        <p>Here&apos;s how long this incredible journey has been unfolding on Pacific time.</p>
-        <p class="timezone-clock" aria-live="polite">Current time in California: <span id="timezoneClock">--:--:--</span></p>
+        <h2 id="timeHeading">Sudah selama ini kamu berpetualang di dunia</h2>
+        <p>Hitung mundur kisahmu dimulai dari hari pertama kamu hadir di bumi.</p>
+        <p class="time-card__timestamp">Sejak <time id="baseDateDisplay" datetime="1974-10-04T00:00:00-07:00">4 Oktober 1974 00:00:00</time> — California (GMT-7)</p>
+        <p class="timezone-clock" aria-live="polite">Waktu sekarang di California: <span id="timezoneClock">--:--:--</span></p>
       </div>
       <div class="time-grid" role="presentation">
         <article class="time-unit" data-reveal>
@@ -96,25 +97,21 @@
   </div>
 
   <div class="crossline-tape" aria-hidden="true">
-    <span>POLICE LINE DO NOT CROSS — KEEP BACK —</span>
-    <span>POLICE LINE DO NOT CROSS — KEEP BACK —</span>
-    <span>POLICE LINE DO NOT CROSS — KEEP BACK —</span>
+    <span class="crossline crossline--one">POLICE CROSS LINE DO NOT CROSS</span>
+    <span class="crossline crossline--two">POLICE CROSS LINE DO NOT CROSS</span>
   </div>
 
   <div class="gadget pistol" aria-hidden="true">
-    <div class="pistol__frame">
-      <span class="pistol__barrel"></span>
-      <span class="pistol__body"></span>
-      <span class="pistol__handle"></span>
-      <span class="pistol__trigger"></span>
+    <div class="gadget__pivot">
+      <model-viewer src="models/revolver.glb" alt="3D revolver model" camera-controls disable-zoom interaction-prompt="none"
+        ar-modes="webxr scene-viewer quick-look" shadow-intensity="1" exposure="1.05"></model-viewer>
     </div>
   </div>
 
   <div class="gadget flashlight" aria-hidden="true">
-    <div class="flashlight__casing">
-      <span class="flashlight__head"></span>
-      <span class="flashlight__beam"></span>
-      <span class="flashlight__body"></span>
+    <div class="gadget__pivot">
+      <model-viewer src="models/flashlight.glb" alt="3D flashlight model" camera-controls disable-zoom interaction-prompt="none"
+        ar-modes="webxr scene-viewer quick-look" shadow-intensity="1" exposure="1.05"></model-viewer>
     </div>
   </div>
 

@@ -1,4 +1,4 @@
-const typingText = "Every second matters—let's celebrate this remarkable journey.";
+const typingText = "Setiap misi sudah kamu jalani—malam ini kita rayakan semua kemenanganmu.";
 const baseDateParts = {
   year: 1974,
   month: 10,
@@ -17,16 +17,39 @@ const timezoneFormatter = new Intl.DateTimeFormat("en-US", {
   second: "2-digit",
   hour12: false
 });
+const baseDateFormatter = new Intl.DateTimeFormat("id-ID", {
+  timeZone: "Etc/GMT+7",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: false
+});
 const numberFormatter = new Intl.NumberFormat("en-US");
 let typingIndex = 0;
+let lastSparkleTime = 0;
+const sparkleCooldown = 120;
+const sparkleChance = 0.55;
+const baseTimezoneOffset = "-07:00";
+const baseDateUTCValue = Date.UTC(
+  baseDateParts.year,
+  baseDateParts.month - 1,
+  baseDateParts.day,
+  baseDateParts.hour + 7,
+  baseDateParts.minute,
+  baseDateParts.second
+);
 
 function typingEffect() {
   const typingContainer = document.getElementById("typing");
   if (!typingContainer) return;
+  typingContainer.textContent = "";
 
   function typeNext() {
     if (typingIndex < typingText.length) {
-      typingContainer.innerHTML += typingText.charAt(typingIndex);
+      typingContainer.textContent += typingText.charAt(typingIndex);
       typingIndex += 1;
       setTimeout(typeNext, 70);
     }
@@ -51,6 +74,17 @@ function updateTimezoneClock() {
   const parts = getTimezoneParts(new Date());
   const pad = (value) => String(value).padStart(2, "0");
   clock.textContent = `${pad(parts.hour)}:${pad(parts.minute)}:${pad(parts.second)}`;
+}
+
+function updateBaseDateDisplay() {
+  const baseDateElement = document.getElementById("baseDateDisplay");
+  if (!baseDateElement) return;
+
+  const formatted = baseDateFormatter.format(new Date(baseDateUTCValue));
+  const pad = (value) => String(value).padStart(2, "0");
+  const isoString = `${baseDateParts.year}-${pad(baseDateParts.month)}-${pad(baseDateParts.day)}T${pad(baseDateParts.hour)}:${pad(baseDateParts.minute)}:${pad(baseDateParts.second)}${baseTimezoneOffset}`;
+  baseDateElement.textContent = formatted;
+  baseDateElement.setAttribute("datetime", isoString);
 }
 
 function updateElapsedTime() {
@@ -182,14 +216,23 @@ function initSlider() {
 function createSparkle(x, y) {
   const sparkle = document.createElement("span");
   sparkle.className = "sparkle";
+  const size = 8 + Math.random() * 10;
+  sparkle.style.width = `${size}px`;
+  sparkle.style.height = `${size}px`;
   sparkle.style.left = `${x}px`;
   sparkle.style.top = `${y}px`;
+  sparkle.style.animationDuration = `${0.5 + Math.random() * 0.25}s`;
   document.body.appendChild(sparkle);
-  setTimeout(() => sparkle.remove(), 600);
+  setTimeout(() => sparkle.remove(), 700);
 }
 
 function handlePointerTrail() {
   document.addEventListener("pointermove", (event) => {
+    const now = performance.now();
+    if (now - lastSparkleTime < sparkleCooldown) return;
+    const shouldCreate = now - lastSparkleTime > sparkleCooldown * 2 || Math.random() < sparkleChance;
+    if (!shouldCreate) return;
+    lastSparkleTime = now;
     createSparkle(event.clientX, event.clientY);
   });
 }
@@ -199,6 +242,7 @@ function setupScrollReveal() {
     ".header-bar",
     "#typing",
     ".time-card__header",
+    ".time-card__timestamp",
     ".time-grid",
     ".celebration > *",
     ".photo-section__intro > *",
@@ -215,6 +259,18 @@ function setupScrollReveal() {
 
   const revealTargets = document.querySelectorAll("[data-reveal]");
   if (!revealTargets.length) return;
+
+  revealTargets.forEach((element, index) => {
+    const baseDelay = index * 0.05;
+    const randomDelay = Math.random() * 0.18;
+    const tilt = (Math.random() - 0.5) * 12;
+    const rotate = (Math.random() - 0.5) * 6;
+    const translate = 32 + Math.random() * 24;
+    element.style.setProperty("--reveal-delay", `${(baseDelay + randomDelay).toFixed(2)}s`);
+    element.style.setProperty("--reveal-tilt", `${tilt.toFixed(2)}deg`);
+    element.style.setProperty("--reveal-rotate", `${rotate.toFixed(2)}deg`);
+    element.style.setProperty("--reveal-translate", `${translate.toFixed(2)}px`);
+  });
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   if (prefersReducedMotion.matches) {
@@ -249,7 +305,8 @@ function setupAimFollowers() {
 
   const updateAim = (element, pointerX, pointerY) => {
     if (!element) return;
-    const rect = element.getBoundingClientRect();
+    const pivot = element.querySelector(".gadget__pivot");
+    const rect = (pivot ?? element).getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height * 0.65;
     const angle = Math.atan2(pointerY - centerY, pointerX - centerX);
@@ -488,6 +545,7 @@ window.addEventListener("resize", () => {
 
 window.addEventListener("DOMContentLoaded", () => {
   typingEffect();
+  updateBaseDateDisplay();
   updateElapsedTime();
   setInterval(updateElapsedTime, 1000);
   updateTimezoneClock();
