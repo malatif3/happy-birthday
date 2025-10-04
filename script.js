@@ -249,8 +249,11 @@ function initAimFollowers() {
 
   // arah yaw: gerak horizontal (kanan–kiri)
   // arah pitch: gerak vertikal (atas–bawah)
-  const yaw = (dx / vw) * 120;       // kanan positif, kiri negatif
-  const pitch = (dy / vh) * 90;      // bawah positif, atas negatif
+  // Untuk rotasi lebih sensitif:
+  const yaw = Math.atan2(dx, 300) * toDeg;  // ubah 500 → 300
+
+  // Untuk limit lebih besar:
+  const yawClamped = clamp(yaw, -60, 60);   // ubah -45,45 → -60,60
 
   // batasi rotasi biar gak ekstrem
   const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
