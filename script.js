@@ -121,48 +121,93 @@ function updateElapsed() {
 // =========================
 //  SLIDER / GALLERY
 // =========================
-function initSlider() {
-  const slides = Array.from(document.querySelectorAll(".slide"));
-  if (!slides.length) return;
+function initCarousel() {
+  const slider = document.querySelector(".photo-slider");
+  const track = slider?.querySelector(".slides");
+  const slides = track ? Array.from(track.children) : [];
+  if (!slider || !track || !slides.length) return;
 
-  const prevButton = document.querySelector(".slider-control--prev");
-  const nextButton = document.querySelector(".slider-control--next");
+  const prevButton = slider.querySelector(".slider-control--prev");
+  const nextButton = slider.querySelector(".slider-control--next");
+  const dotsContainer = slider.querySelector(".slider-dots");
+
+  const dots = [];
   let current = 0;
+  let autoTimer;
+  const AUTO_DELAY = 5000;
 
-  const arrange = () => {
-    const container = document.querySelector(".slides-window");
-    const containerWidth = container ? container.getBoundingClientRect().width : window.innerWidth;
-    const baseShift = Math.min(containerWidth / 2.2, 240);
+  const stopAuto = () => {
+    if (autoTimer) {
+      clearInterval(autoTimer);
+      autoTimer = undefined;
+    }
+  };
 
+  const startAuto = () => {
+    stopAuto();
+    autoTimer = window.setInterval(() => {
+      goTo(current + 1);
+    }, AUTO_DELAY);
+  };
+
+  const updateActiveStates = () => {
+    track.style.transform = `translateX(-${current * 100}%)`;
     slides.forEach((slide, index) => {
-      let offset = index - current;
-      const half = Math.floor(slides.length / 2);
-      if (offset > half) offset -= slides.length;
-      if (offset < -half) offset += slides.length;
-
-      const abs = Math.abs(offset);
-      const translateX = offset * baseShift;
-      const rotateY = offset * -8;
-      const scale = Math.max(0.65, 1 - abs * 0.18);
-      const depthOpacity = abs > 2 ? 0 : Math.max(0.35, 1 - abs * 0.25);
-
-      slide.style.transform = `translate(-50%, -50%) translateX(${translateX}px) rotateY(${rotateY}deg) scale(${scale})`;
-      slide.style.zIndex = slides.length - abs;
-      slide.style.opacity = depthOpacity;
-      slide.classList.toggle("is-active", offset === 0);
+      const isActive = index === current;
+      slide.classList.toggle("is-active", isActive);
+      slide.setAttribute("aria-hidden", (!isActive).toString());
+    });
+    dots.forEach((dot, index) => {
+      const isActive = index === current;
+      dot.classList.toggle("is-active", isActive);
+      dot.setAttribute("aria-selected", isActive.toString());
+      dot.setAttribute("tabindex", isActive ? "0" : "-1");
     });
   };
 
   const goTo = (index) => {
     current = (index + slides.length) % slides.length;
-    arrange();
+    updateActiveStates();
   };
 
-  prevButton?.addEventListener("click", () => goTo(current - 1));
-  nextButton?.addEventListener("click", () => goTo(current + 1));
+  if (dotsContainer) {
+    slides.forEach((slide, index) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "slider-dot";
+      dot.setAttribute("role", "tab");
+      dot.setAttribute("aria-label", `Lihat foto ${index + 1}`);
+      if (slide.id) dot.setAttribute("aria-controls", slide.id);
+      dot.addEventListener("click", () => {
+        goTo(index);
+        startAuto();
+      });
+      dotsContainer.appendChild(dot);
+      dots.push(dot);
+    });
+  }
 
-  window.addEventListener("resize", arrange);
-  arrange();
+  prevButton?.addEventListener("click", () => {
+    goTo(current - 1);
+    startAuto();
+  });
+  nextButton?.addEventListener("click", () => {
+    goTo(current + 1);
+    startAuto();
+  });
+
+  slider.addEventListener("pointerenter", stopAuto);
+  slider.addEventListener("pointerleave", startAuto);
+  slider.addEventListener("focusin", stopAuto);
+  slider.addEventListener("focusout", () => {
+    // Delay to allow focus to settle on interactive children
+    setTimeout(() => {
+      if (!slider.contains(document.activeElement)) startAuto();
+    }, 100);
+  });
+
+  updateActiveStates();
+  startAuto();
 }
 
 
@@ -226,38 +271,37 @@ function initAimFollowers() {
   const target = document.getElementById("targetCursor");
   const pistolWrapper = document.querySelector(".gadget--pistol");
   const flashlightWrapper = document.querySelector(".gadget--flashlight");
-  const pistol = pistolWrapper?.querySelector("model-viewer");
-  const flashlight = flashlightWrapper?.querySelector("model-viewer");
+  const pistolPivot = pistolWrapper?.querySelector(".gadget__pivot");
+  const flashlightPivot = flashlightWrapper?.querySelector(".gadget__pivot");
 
-  if (!target || !pistol || !flashlight) return;
+  if (!target || !pistolWrapper || !flashlightWrapper || !pistolPivot || !flashlightPivot) return;
 
   const toDeg = 180 / Math.PI;
   const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
-  function updateAim(model, x, y) {
-  if (!model) return;
-  const rect = model.getBoundingClientRect();
-  const cx = rect.left + rect.width / 2;
-  const cy = rect.top + rect.height / 2;
+  function updateAim(wrapper, pivot, x, y) {
+    const rect = wrapper.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
 
-  const dx = x - cx;
-  const dy = y - cy;
+    const dx = x - cx;
+    const dy = y - cy;
 
-  const yaw = Math.atan2(dx, 300) * toDeg;
-  const pitch = Math.atan2(-dy, 300) * toDeg;
+    const yaw = Math.atan2(dx, rect.width * 0.9) * toDeg;
+    const pitch = Math.atan2(-dy, rect.height * 1.1) * toDeg;
 
-  const yawClamped = clamp(yaw, -60, 60);
-  const pitchClamped = clamp(pitch, -30, 30);
+    const yawClamped = clamp(yaw, -65, 65);
+    const pitchClamped = clamp(pitch, -35, 35);
 
-  model.orientation = `${pitchClamped.toFixed(2)}deg ${yawClamped.toFixed(2)}deg 0deg`;
-}
+    pivot.style.transform = `rotateX(${pitchClamped.toFixed(2)}deg) rotateY(${yawClamped.toFixed(2)}deg)`;
+  }
 
   document.addEventListener("pointermove", (e) => {
     const { clientX, clientY } = e;
     target.style.setProperty("--cursor-x", `${clientX}px`);
     target.style.setProperty("--cursor-y", `${clientY}px`);
-    updateAim(pistol, clientX, clientY);
-    updateAim(flashlight, clientX, clientY);
+    updateAim(pistolWrapper, pistolPivot, clientX, clientY);
+    updateAim(flashlightWrapper, flashlightPivot, clientX, clientY);
   });
 
   document.addEventListener("pointerenter", () => {
@@ -265,6 +309,8 @@ function initAimFollowers() {
   });
   document.addEventListener("pointerleave", () => {
     document.body.classList.remove("is-aiming");
+    pistolPivot.style.transform = "rotateX(0deg) rotateY(0deg)";
+    flashlightPivot.style.transform = "rotateX(0deg) rotateY(0deg)";
   });
 }
 
@@ -420,7 +466,7 @@ window.addEventListener("DOMContentLoaded", () => {
   updateElapsed();
   setInterval(updateZoneClock, 1000);
   setInterval(updateElapsed, 1000);
-  initSlider();
+  initCarousel();
   initSparkles();
   initReveal();
   initAimFollowers();
