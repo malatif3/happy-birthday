@@ -303,6 +303,9 @@ function setupAimFollowers() {
 
   if (!targetCursor && !pistol && !flashlight) return;
 
+  const toDegrees = 180 / Math.PI;
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
   const updateAim = (element, pointerX, pointerY) => {
     if (!element) return;
     const pivot = element.querySelector(".gadget__pivot");
@@ -311,6 +314,36 @@ function setupAimFollowers() {
     const centerY = rect.top + rect.height * 0.65;
     const angle = Math.atan2(pointerY - centerY, pointerX - centerX);
     element.style.setProperty("--aim-angle", `${angle}rad`);
+    const centerY = rect.top + rect.height / 2;
+
+    const dx = pointerX - centerX;
+    const dy = pointerY - centerY;
+    const viewportWidth = window.innerWidth || rect.width;
+    const viewportHeight = window.innerHeight || rect.height;
+
+    const yaw = clamp(Math.atan2(dx, viewportWidth * 0.38) * toDegrees, -55, 55);
+    const pitch = clamp(Math.atan2(-dy, viewportHeight * 0.42) * toDegrees, -38, 42);
+    const roll = clamp(Math.atan2(dx, viewportWidth * 0.85) * toDegrees * 0.6, -18, 18);
+
+    element.style.setProperty("--aim-yaw", `${yaw.toFixed(2)}deg`);
+    element.style.setProperty("--aim-pitch", `${pitch.toFixed(2)}deg`);
+    element.style.setProperty("--aim-roll", `${roll.toFixed(2)}deg`);
+
+    if (pivot) {
+      const intensity = Math.min(Math.hypot(dx, dy) / Math.hypot(viewportWidth, viewportHeight), 1);
+      pivot.style.setProperty("--aim-depth", intensity.toFixed(3));
+    }
+  };
+
+  const resetAim = () => {
+    [pistol, flashlight].forEach((element) => {
+      if (!element) return;
+      element.style.setProperty("--aim-yaw", "0deg");
+      element.style.setProperty("--aim-pitch", "0deg");
+      element.style.setProperty("--aim-roll", "0deg");
+      const pivot = element.querySelector(".gadget__pivot");
+      pivot?.style.setProperty("--aim-depth", "0");
+    });
   };
 
   const revealCursor = () => {
@@ -336,6 +369,7 @@ function setupAimFollowers() {
   document.addEventListener("pointerleave", () => {
     targetCursor?.classList.add("is-hidden");
     document.body.classList.remove("is-aiming");
+    resetAim();
   });
   document.addEventListener("pointerenter", () => {
     if (!targetCursor) return;
