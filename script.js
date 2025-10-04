@@ -224,41 +224,41 @@ function initReveal() {
 // =========================
 function initAimFollowers() {
   const target = document.getElementById("targetCursor");
-  const pistol = document.querySelector(".gadget--pistol");
-  const flashlight = document.querySelector(".gadget--flashlight");
+  const pistol = document.querySelector(".gadget--pistol model-viewer");
+  const flashlight = document.querySelector(".gadget--flashlight model-viewer");
   if (!target && !pistol && !flashlight) return;
 
   const toDeg = 180 / Math.PI;
   const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
 
-  const updateAim = (el, x, y) => {
-    if (!el) return;
-    const pivot = el.querySelector(".gadget__pivot");
-    const rect = (pivot ?? el).getBoundingClientRect();
+  const updateAim = (model, x, y) => {
+    if (!model) return;
+    const rect = model.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
     const dx = x - cx;
     const dy = y - cy;
-    const vw = window.innerWidth, vh = window.innerHeight;
-    const yaw = clamp(Math.atan2(dx, vw * 0.38) * toDeg, -55, 55);
-    const pitch = clamp(Math.atan2(-dy, vh * 0.42) * toDeg, -38, 42);
-    const roll = clamp(Math.atan2(dx, vw * 0.85) * toDeg * 0.6, -18, 18);
-    el.style.setProperty("--aim-yaw", `${yaw}deg`);
-    el.style.setProperty("--aim-pitch", `${pitch}deg`);
-    el.style.setProperty("--aim-roll", `${roll}deg`);
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    const yaw = clamp(Math.atan2(dx, vw * 0.4) * toDeg, -50, 50);
+    const pitch = clamp(Math.atan2(-dy, vh * 0.4) * toDeg, -35, 35);
+
+    // ubah sudut kamera model-viewer berdasarkan posisi mouse
+    model.cameraOrbit = `${yaw.toFixed(1)}deg ${90 + pitch.toFixed(1)}deg 105%`;
   };
 
   document.addEventListener("pointermove", (e) => {
-    target?.style.setProperty("--cursor-x", `${e.clientX}px`);
-    target?.style.setProperty("--cursor-y", `${e.clientY}px`);
-    updateAim(pistol, e.clientX, e.clientY);
-    updateAim(flashlight, e.clientX, e.clientY);
-    document.body.classList.add("is-aiming");
+    const { clientX, clientY } = e;
+    target?.style.setProperty("--cursor-x", `${clientX}px`);
+    target?.style.setProperty("--cursor-y", `${clientY}px`);
+    updateAim(pistol, clientX, clientY);
+    updateAim(flashlight, clientX, clientY);
   });
+}
 
   document.addEventListener("pointerleave", () => document.body.classList.remove("is-aiming"));
 }
-
 
 // =========================
 //  BALLOONS + BURST
